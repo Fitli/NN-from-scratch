@@ -14,7 +14,7 @@ int main() {
         Matrix m1 = Matrix(v3);
         m1.print();
 
-        m1.getTransponed()->print();
+    m1.getTransposed()->print();
 
 
         RowType v4({2, 2, 7});
@@ -32,6 +32,6 @@ int main() {
         m1.print();
 
         Matrix m4 = Matrix(3, 3);
-        mul(*m1.getTransponed(),m3, m4);
+        mul(*m1.getTransposed(), m3, m4);
         m4.print();
 };

@@ -13,20 +13,20 @@ Matrix::Matrix(MatrixType matrix) : Matrix(matrix, matrix[0].size(), matrix.size
 Matrix::Matrix(int width, int height) : Matrix(empty_matrix(width, height), width, height){}
 
 Matrix::Matrix(MatrixType matrix, int width, int height) :
-        matrix(std::move(matrix)), transponed(nullptr), width(width), height(height){}
+        matrix(std::move(matrix)), transposed(nullptr), width(width), height(height){}
 
-Matrix::Matrix(Matrix *transponed, int width, int height) : Matrix(width, height) {
-    transponed = transponed;
+Matrix::Matrix(Matrix *transposed, int width, int height) : Matrix(width, height) {
+    transposed = transposed;
 }
 
 float Matrix::get_value(int row, int column) {
     return matrix[row][column];
 }
 
-void Matrix::put_value(float value, int row, int column, bool to_transponed) {
+void Matrix::put_value(float value, int row, int column, bool to_transposed) {
     matrix[row][column] = value;
-    if(to_transponed and transponed != nullptr) {
-        transponed->put_value(value, column, row, false);
+    if(to_transposed and transposed != nullptr) {
+        transposed->put_value(value, column, row, false);
     }
 }
 
@@ -38,17 +38,17 @@ int Matrix::getWidth() const {
     return width;
 }
 
-Matrix *Matrix::getTransponed(){
-    if(transponed == nullptr) {
-        transponed = new Matrix(this, height, width);
+Matrix *Matrix::getTransposed(){
+    if(transposed == nullptr) {
+        transposed = new Matrix(this, height, width);
     }
     for(int row = 0; row<height; row++) {
         for(int column = 0; column<width; column++) {
             float val = get_value(row, column);
-            transponed->put_value(val, column, row, false);
+            transposed->put_value(val, column, row, false);
         }
     }
-    return transponed;
+    return transposed;
 }
 
 RowType &Matrix::get_row(int row) {
@@ -89,9 +89,18 @@ void sum(Matrix& first, Matrix& second, Matrix& result) {
 }
 
 void mul(Matrix& first, Matrix& second, Matrix& result){
+    if(first.getWidth() != second.getHeight()) {
+        // No idea, jak fungují výjimky v C++;
+    }
+    if(first.getHeight() != result.getHeight()) {
+        // No idea, jak fungují výjimky v C++;
+    }
+    if(second.getWidth() != result.getWidth()) {
+        // No idea, jak fungují výjimky v C++;
+    }
     for(int row = 0; row < first.getHeight(); row++) {
         for(int column = 0; column < second.getWidth(); column++) {
-            float val = mul(first.get_row(row), second.getTransponed()->get_row(column));
+            float val = mul(first.get_row(row), second.getTransposed()->get_row(column));
             result.put_value(val, row, column);
         }
     }
