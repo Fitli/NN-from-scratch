@@ -42,7 +42,7 @@ public:
     Matrix *getTransposed();
 
     float get_value(int row, int column);
-    RowType &get_row(int row);
+    RowType & get_row(int row);
 
     /*
      * Put `value` to the given `row` and `column` of the matrix.

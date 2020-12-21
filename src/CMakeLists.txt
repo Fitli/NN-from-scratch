@@ -8,8 +8,16 @@ include_directories(.)
 add_executable(main
         main.cpp
         Matrix.cpp
-        Matrix.h)
+        Matrix.h
+        CSVReader.cpp
+        CSVReader.h)
 add_executable(matrix_playground
         matrix_playground.cpp
         Matrix.cpp
         Matrix.h)
+add_executable(csv_playground
+        CSVReader.h
+        CSVReader.cpp
+        Matrix.cpp
+        Matrix.h
+        csv_playground.cpp)
