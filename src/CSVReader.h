@@ -15,7 +15,7 @@ class CSVReader {
 public:
     explicit CSVReader(const string &filename);
     bool load_matrix(Matrix &matrix);
-    bool load_label(int &label);
+    bool load_label(float &label);
 };
 
 

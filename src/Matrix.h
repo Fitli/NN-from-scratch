@@ -19,10 +19,11 @@ class Matrix {
     int width;
 
 public:
+    Matrix();
     /*
      * Create empty `Matrix` of given width and height
      */
-    Matrix(int width, int height);
+    Matrix(int width, int height, float value=0);
     /*
      * Create `Matrix` from vector of vectors of floats
      */
@@ -52,9 +53,11 @@ public:
     void put_value(float value, int row, int column, bool to_transposed = true);
 
     void print();
+
+    void apply(float (&func)(float));
 };
 
-MatrixType empty_matrix(int width, int height);
+MatrixType new_matrix(int width, int height, float val = 0);
 
 /*
  * Put sum of matrices `first` and `second` to matrix `result`.

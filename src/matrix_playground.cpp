@@ -6,6 +6,10 @@
 
 using namespace std;
 
+float plus3(float val) {
+    return val + 3;
+}
+
 int main() {
         RowType v1({1, 2, 3});
         RowType v2({4, 5, 6});
@@ -33,5 +37,8 @@ int main() {
 
         Matrix m4 = Matrix(3, 3);
         mul(*m1.getTransposed(), m3, m4);
+        m4.print();
+
+        m4.apply(plus3);
         m4.print();
 };

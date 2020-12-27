@@ -34,7 +34,7 @@ bool CSVReader::load_matrix(Matrix &matrix) {
  * @param label output
  * @return true if successful
  */
-bool CSVReader::load_label(int &label) {
+bool CSVReader::load_label(float &label) {
     return bool(in >> label);
 
 }

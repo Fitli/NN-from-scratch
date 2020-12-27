@@ -8,9 +8,12 @@
 #include <exception>
 #include <iostream>
 
+
+Matrix::Matrix(): Matrix(0, 0) {}
+
 Matrix::Matrix(MatrixType matrix) : Matrix(matrix, matrix[0].size(), matrix.size()){}
 
-Matrix::Matrix(int width, int height) : Matrix(empty_matrix(width, height), width, height){}
+Matrix::Matrix(int width, int height, float value) : Matrix(new_matrix(width, height, value), width, height){}
 
 Matrix::Matrix(MatrixType matrix, int width, int height) :
         matrix(std::move(matrix)), transposed(nullptr), width(width), height(height){}
@@ -65,8 +68,17 @@ void Matrix::print() {
     }
 }
 
+void Matrix::apply(float (&func)(float)) {
+    for(int row = 0; row<height; row++) {
+        for(int column = 0; column<width; column++) {
+            float val = this->get_value(row, column);
+            this->put_value(func(val), row, column);
+        }
+    }
+}
 
-MatrixType empty_matrix(int width, int height) {
+
+MatrixType new_matrix(int width, int height, float val) {
     RowType row(width, 0);
     MatrixType matrix(height, row);
     return matrix;

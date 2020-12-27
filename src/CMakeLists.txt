@@ -10,7 +10,11 @@ add_executable(main
         Matrix.cpp
         Matrix.h
         CSVReader.cpp
-        CSVReader.h)
+        CSVReader.h
+        NeuralNetwork.cpp
+        NeuralNetwork.h
+        CSVWriter.cpp
+        CSVWriter.h)
 add_executable(matrix_playground
         matrix_playground.cpp
         Matrix.cpp
@@ -20,4 +24,16 @@ add_executable(csv_playground
         CSVReader.cpp
         Matrix.cpp
         Matrix.h
-        csv_playground.cpp)
+        csv_playground.cpp
+        CSVWriter.cpp
+        CSVWriter.h)
+add_executable(network_playgorund
+        CSVReader.h
+        CSVReader.cpp
+        Matrix.cpp
+        Matrix.h
+        CSVWriter.cpp
+        CSVWriter.h
+        NeuralNetwork.cpp
+        NeuralNetwork.h
+        network_playgorund.cpp)

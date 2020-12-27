@@ -14,7 +14,7 @@ int main() {
     }
 
     CSVReader reader2 = CSVReader("../../data/testing/small_labels.csv");
-    int result;
+    float result;
     while(reader2.load_label(result)) {
         cout << result << endl;
     }
