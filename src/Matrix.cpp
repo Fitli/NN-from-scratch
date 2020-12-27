@@ -19,13 +19,13 @@ Matrix::Matrix(Matrix *transposed, int width, int height) : Matrix(width, height
     transposed = transposed;
 }
 
-float Matrix::get_value(int row, int column) {
+float Matrix::get_value(int row, int column) const {
     return matrix[row][column];
 }
 
 void Matrix::put_value(float value, int row, int column, bool to_transposed) {
     matrix[row][column] = value;
-    if(to_transposed and transposed != nullptr) {
+    if(to_transposed && transposed != nullptr) {
         transposed->put_value(value, column, row, false);
     }
 }
@@ -41,6 +41,8 @@ int Matrix::getWidth() const {
 Matrix *Matrix::getTransposed(){
     if(transposed == nullptr) {
         transposed = new Matrix(this, height, width);
+        // TODO asi chce kontrolu validniho ukazatele
+        // mozna by bylo lepsi make_unique<Matrix>(this, height, width), #include <memory>
     }
     for(int row = 0; row<height; row++) {
         for(int column = 0; column<width; column++) {
@@ -75,10 +77,10 @@ MatrixType empty_matrix(int width, int height) {
 
 void sum(Matrix& first, Matrix& second, Matrix& result) {
     if(first.getHeight() != second.getHeight()  or first.getHeight() != result.getHeight()) {
-        // No idea, jak fungují výjimky v C++;
+        throw invalid_argument("Wrong matrix size.");
     }
     if(first.getWidth() != second.getWidth()  or first.getWidth() != result.getWidth()) {
-        // No idea, jak fungují výjimky v C++;
+        throw invalid_argument("Wrong matrix size.");
     }
     for(int row = 0; row < first.getHeight(); row++) {
         for(int column = 0; column < first.getWidth(); column++) {
@@ -90,14 +92,16 @@ void sum(Matrix& first, Matrix& second, Matrix& result) {
 
 void mul(Matrix& first, Matrix& second, Matrix& result){
     if(first.getWidth() != second.getHeight()) {
-        // No idea, jak fungují výjimky v C++;
+        throw invalid_argument("Wrong matrix size.");
     }
     if(first.getHeight() != result.getHeight()) {
-        // No idea, jak fungují výjimky v C++;
+        throw invalid_argument("Wrong matrix size.");
     }
     if(second.getWidth() != result.getWidth()) {
-        // No idea, jak fungují výjimky v C++;
+        throw invalid_argument("Wrong matrix size.");
     }
+    // TODO tohle bude pravdepodobne potreba efektivnejsi??
+
     for(int row = 0; row < first.getHeight(); row++) {
         for(int column = 0; column < second.getWidth(); column++) {
             float val = mul(first.get_row(row), second.getTransposed()->get_row(column));
@@ -109,10 +113,10 @@ void mul(Matrix& first, Matrix& second, Matrix& result){
 
 void mul(Matrix &matrix, float num, Matrix &result) {
     if(matrix.getHeight() != result.getHeight()) {
-        // No idea, jak fungují výjimky v C++;
+        throw invalid_argument("Wrong matrix size.");
     }
     if(matrix.getWidth() != result.getWidth()) {
-        // No idea, jak fungují výjimky v C++;
+        throw invalid_argument("Wrong matrix size.");
     }
     for(int row = 0; row < matrix.getHeight(); row++) {
         for(int column = 0; column < matrix.getWidth(); column++) {
@@ -124,7 +128,7 @@ void mul(Matrix &matrix, float num, Matrix &result) {
 
 float mul(RowType &first, RowType &second) {
     if(first.size() != second.size()) {
-        // No idea, jak fungují výjimky v C++;
+        throw invalid_argument("Wrong matrix size.");
     }
     float result = 0;
     for(int i = 0; i<first.size(); i++) {

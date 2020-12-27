@@ -41,7 +41,7 @@ public:
      */
     Matrix *getTransposed();
 
-    float get_value(int row, int column);
+    float get_value(int row, int column) const;
     RowType & get_row(int row);
 
     /*

@@ -3,6 +3,7 @@
 //
 
 #include "Matrix.h"
+#include "iostream"
 
 using namespace std;
 
@@ -34,4 +35,10 @@ int main() {
         Matrix m4 = Matrix(3, 3);
         mul(*m1.getTransposed(), m3, m4);
         m4.print();
+
+    try {
+        mul(m1, m1, m3);
+    } catch (invalid_argument& e) {
+        cout << e.what() << endl;
+    }
 };
