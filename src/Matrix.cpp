@@ -116,15 +116,30 @@ void sum(Matrix& first, Matrix& second, Matrix& result) {
     }
 }
 
+void subtract(Matrix& first, Matrix& second, Matrix& result) {
+    if(first.getHeight() != second.getHeight()  or first.getHeight() != result.getHeight()) {
+        throw invalid_argument("Wrong matrix size.");
+    }
+    if(first.getWidth() != second.getWidth()  or first.getWidth() != result.getWidth()) {
+        throw invalid_argument("Wrong matrix size.");
+    }
+    for(int row = 0; row < first.getHeight(); row++) {
+        for(int column = 0; column < first.getWidth(); column++) {
+            float val = first.get_value(row, column) - second.get_value(row, column);
+            result.put_value(val, row, column);
+        }
+    }
+}
+
 void mul(Matrix& first, Matrix& second, Matrix& result){
     if(first.getWidth() != second.getHeight()) {
-        throw invalid_argument("Wrong matrix size.");
+        throw invalid_argument("Wrong matrix size: first width x second height.");
     }
     if(first.getHeight() != result.getHeight()) {
-        throw invalid_argument("Wrong matrix size.");
+        throw invalid_argument("Wrong matrix size: first x result.");
     }
     if(second.getWidth() != result.getWidth()) {
-        throw invalid_argument("Wrong matrix size.");
+        throw invalid_argument("Wrong matrix size: second x result.");
     }
     // TODO tohle bude pravdepodobne potreba efektivnejsi??
 

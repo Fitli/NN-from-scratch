@@ -67,6 +67,11 @@ MatrixType new_matrix(int width, int height, float val = 0);
  */
 void sum(Matrix& first, Matrix& second, Matrix& result);
 /*
+ * Put subtraction of matrices `first` and `second` to matrix `result`.
+ * All of the matrices have to have the same dimensions.
+ */
+void subtract(Matrix& first, Matrix& second, Matrix& result);
+/*
  * Put matrix multiplication of `first` and `second` to matrix `result`.
  * The three matrices have to have proper dimensions for matrix multiplication.
  */
