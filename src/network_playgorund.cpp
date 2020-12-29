@@ -17,6 +17,7 @@ float unit_step(float in) {
 void xor_net() {
     vector<int> topology = vector<int>({2,2,1});
     NeuralNetwork network(topology, unit_step);
+    network.print_weights();
     vector<float> w11({2, -2, 0});
     vector<float> w13({-1, 3, 0});
     MatrixType w1({w11, w11, w13});

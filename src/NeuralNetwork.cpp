@@ -4,6 +4,7 @@
 
 #include "NeuralNetwork.h"
 
+
 NeuralNetwork::NeuralNetwork(vector<int>& topology, float (&af) (float)):
     topology(topology),
     activation_func(af),
@@ -11,6 +12,7 @@ NeuralNetwork::NeuralNetwork(vector<int>& topology, float (&af) (float)):
     weights(vector<Matrix>(num_layers-1)),
     layers(vector<Matrix>(num_layers))
     {
+
     // create layers
     for(int i = 0; i < num_layers - 1; i++) {
         // last cell is bias, all cells are initialized to 1
@@ -22,6 +24,8 @@ NeuralNetwork::NeuralNetwork(vector<int>& topology, float (&af) (float)):
     // create weight matrices
     for(int i = 0; i < num_layers - 1; i++) {
         weights[i] = Matrix(layers[i+1].getWidth(), layers[i].getWidth());
+        // Xavier Initialization of weights
+        weights[i].xavier_initialization((float)(layers[i].getWidth()));
     }
     //TODO: initialize weights
 }
@@ -41,11 +45,11 @@ void NeuralNetwork::backPropagate(RowType &result) {
 
 }
 
-void NeuralNetwork::learn(string filename_inputs, string filename_labels) {
+void NeuralNetwork::learn(const string& filename_inputs, const string& filename_labels) {
 
 }
 
-void NeuralNetwork::label(string filename_input, string filename_ouput) {
+void NeuralNetwork::label(const string& filename_input, const string& filename_ouput) {
     CSVReader input = CSVReader(filename_input);
     CSVWriter output = CSVWriter(filename_ouput);
     while(input.load_matrix(layers[0])) {
@@ -75,3 +79,12 @@ void NeuralNetwork::load_input(RowType input) {
     // bias
     layers[0].put_value(1, 0, input.size());
 }
+
+void NeuralNetwork::print_weights() {
+    for(int i = 0; i < num_layers - 1; ++i) {
+        std::cout << "Layer " << i << " weights:" << std::endl;
+        weights[i].print();
+    }
+}
+
+

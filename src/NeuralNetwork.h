@@ -24,9 +24,10 @@ public:
     void propagate();
     float get_result();
     void backPropagate(RowType &result);
-    void learn(string filename_inputs, string filename_labels);
-    void label(string filename_input, string filename_ouput);
+    void learn(const string& filename_inputs, const string& filename_labels);
+    void label(const string& filename_input, const string& filename_ouput);
     void setWeights(vector<MatrixType> weights);
+    void print_weights();
 };
 
 

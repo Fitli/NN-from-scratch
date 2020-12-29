@@ -55,6 +55,8 @@ public:
     void print();
 
     void apply(float (&func)(float));
+
+    void xavier_initialization(float n);
 };
 
 MatrixType new_matrix(int width, int height, float val = 0);

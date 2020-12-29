@@ -7,6 +7,9 @@
 #include <utility>
 #include <exception>
 #include <iostream>
+#include <random>
+#include <cmath>
+#include <chrono>
 
 
 Matrix::Matrix(): Matrix(0, 0) {}
@@ -75,6 +78,17 @@ void Matrix::apply(float (&func)(float)) {
         for(int column = 0; column<width; column++) {
             float val = this->get_value(row, column);
             this->put_value(func(val), row, column);
+        }
+    }
+}
+
+void Matrix::xavier_initialization(float n) {
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::default_random_engine generator(seed);
+    std::normal_distribution<float> distribution(0.0,1.0);
+    for(int row = 0; row<height; row++) {
+        for(int column = 0; column<width; column++) {
+            this->put_value(distribution(generator)/sqrtf(n), row, column);
         }
     }
 }
