@@ -95,7 +95,7 @@ void Matrix::xavier_initialization(float n) {
 
 
 MatrixType new_matrix(int width, int height, float val) {
-    RowType row(width, 0);
+    RowType row(width, val);
     MatrixType matrix(height, row);
     return matrix;
 }

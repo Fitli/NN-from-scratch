@@ -49,33 +49,32 @@ void xor_predefined_net() {
     RowType i1({1, 1}); // 0
     network.load_input(i1);
     network.propagate();
-    cout << network.get_result() << endl;
+    cout << network.get_result_xor() << endl;
 
     RowType i2({0, 1}); // 1
     network.load_input(i2);
     network.propagate();
-    cout << network.get_result() << endl;
+    cout << network.get_result_xor() << endl;
 
     RowType i3({1, 0}); // 1
     network.load_input(i3);
     network.propagate();
-    cout << network.get_result() << endl;
+    cout << network.get_result_xor() << endl;
 
     RowType i4({0, 0}); // 0
     MatrixType mt({i4});
     Matrix m(mt, 2, 1);
     network.load_input(m);
     network.propagate();
-    cout << network.get_result() << endl;
+    cout << network.get_result_xor() << endl;
 
 }
 
 void xor_train() {
 
     vector<int> topology = vector<int>({2,2,1});
-    std::cout << std::endl << "Try to train" << std::endl;
     NeuralNetwork network(topology, sigmoid, d_sigmoid);
-    //network.print_weights();
+    network.setLearningRate(0.01);
 
     RowType i4({0, 0}); // 0
     MatrixType mt_i4({i4});
@@ -95,23 +94,38 @@ void xor_train() {
 
     network.load_input(m_i1);
     network.propagate();
-    cout << endl << "Before training evaluate on 1, 1 = 0 : " << network.get_result() << endl;
+    cout << endl << "Before training evaluate on 1, 1 = 0 : " << network.get_result_xor() << endl;
+    network.load_input(m_i2);
+    network.propagate();
+    cout << "Evaluate on 0, 1 = 1 : " << network.get_result_xor() << endl;
+    network.load_input(m_i3);
+    network.propagate();
+    cout << "Evaluate on 1, 0 = 1 : " << network.get_result_xor() << endl;
+    network.load_input(m_i4);
+    network.propagate();
+    cout << "Evaluate on 0, 0 = 0 : " << network.get_result_xor() << endl;
 
-    vector<Matrix> x_train({m_i4, m_i3, m_i2, m_i1});
-    RowType y_train({0, 1, 1, 0});
-    network.train_on_batch(x_train, y_train);
-    //network.print_weights();
+    vector<Matrix> x_train({m_i4, m_i3, m_i1, m_i2});
+    vector<Matrix> y_train({ Matrix(1, 1, 0), Matrix(1, 1, 1), Matrix(1, 1, 0), Matrix(1, 1, 1)});
 
+    srand(time(NULL));
+    for(int i = 0; i < 1000; ++i) {
+        int r = rand() % 4;
+        network.trainOnBatch({x_train[r]}, {y_train[r]});
+    }
 
     network.load_input(m_i1);
     network.propagate();
-    cout << endl << "After 1. training evaluate on 1, 1 = 0 : " << network.get_result() << endl;
-
-    network.train_on_batch(x_train, y_train);
-    network.load_input(m_i1);
+    cout << endl << "Evaluate on 1, 1 = 0 : " << network.get_result_xor() << endl;
+    network.load_input(m_i2);
     network.propagate();
-    cout << endl << "After 2. training evaluate on 1, 1 = 0 : " << network.get_result() << endl;
-
+    cout << "Evaluate on 0, 1 = 1 : " << network.get_result_xor() << endl;
+    network.load_input(m_i3);
+    network.propagate();
+    cout << "Evaluate on 1, 0 = 1 : " << network.get_result_xor() << endl;
+    network.load_input(m_i4);
+    network.propagate();
+    cout << "Evaluate on 0, 0 = 0 : " << network.get_result_xor() << endl;
 
 }
 

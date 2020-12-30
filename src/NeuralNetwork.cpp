@@ -4,7 +4,7 @@
 
 #include "NeuralNetwork.h"
 
-#include <utility>
+#include <algorithm>
 
 
 NeuralNetwork::NeuralNetwork(vector<int>& topology, float (&af) (float), float (&daf) (float)):
@@ -14,6 +14,7 @@ NeuralNetwork::NeuralNetwork(vector<int>& topology, float (&af) (float), float (
     layers(vector<Matrix>(num_layers)),
     bias_weights(vector<Matrix>(num_layers-1)),
     errors(vector<Matrix>(num_layers)),
+    learning_rate(0.0),
     activation_func(af),
     d_activation_func(daf)
     {
@@ -34,6 +35,10 @@ NeuralNetwork::NeuralNetwork(vector<int>& topology, float (&af) (float), float (
     }
 }
 
+void NeuralNetwork::setLearningRate(float lr) {
+    learning_rate = lr;
+}
+
 void NeuralNetwork::propagate() {
     for(int i = 0; i < num_layers - 1; i++) {
         mul(layers[i], weights[i], layers[i+1]);
@@ -42,43 +47,40 @@ void NeuralNetwork::propagate() {
     }
 }
 
-float NeuralNetwork::get_result() {
-    return layers[num_layers - 1].get_value(0, 0);
-    // TODO funguje jen pro XOR
+Matrix NeuralNetwork::get_result() {
+    return layers[num_layers - 1];
 }
 
-void NeuralNetwork::backPropagate(float result) {
-    // TODO inicializace chyby pro vic ouptput neuronu - tohle funguje jen pro XOR
-    errors[num_layers - 1].put_value(get_result() - result, 0, 0);
+float NeuralNetwork::get_label() {
+    float max_label_index = std::max_element(layers[num_layers - 1].get_row(0).begin(),layers[num_layers - 1].get_row(0).end()) - layers[num_layers - 1].get_row(0).begin();
+    return max_label_index;
+}
 
-    // TODO learning rate jinde
-    float learning_rate = 0.01;
+void NeuralNetwork::backPropagate(Matrix result) {
+    // initialization of error
+    subtract(layers[num_layers - 1], result, errors[num_layers - 1]);
+    //std::cout << "Wanted result " << result.get_value(0, 0) << endl;
+    //std::cout << "Guessed result " << layers[num_layers - 1].get_value(0, 0) << endl;
+
 
     for(int i = num_layers - 2; i >= 0; --i) {
         //count error
         mul(weights[i], errors[i + 1], errors[i]);
 
-        // TODO rozmyslet kam ukladat vysledky - dalsi vektor pro deltu? je ok ukladat mezivysledek do vysledku horni vrstvy? nebo radsi do horni chyby?
-        //count gradient = epsilon * Error * f'(Output); currently stored in layers[i + 1]
+        // TODO rozmyslet kam ukladat vysledky
+        //count gradient = epsilon * Error * f'(Output)
         //count delta of weights = gradient * Input
-        layers[i + 1].apply(d_activation_func);
-        elem_mul(errors[i + 1], *layers[i + 1].getTransposed(), *layers[i + 1].getTransposed());
-        mul(*layers[i + 1].getTransposed(), learning_rate, *layers[i + 1].getTransposed());
+        Matrix gradient = *layers[i + 1].getTransposed();
+        gradient.apply(d_activation_func);
+        elem_mul(errors[i + 1], *layers[i + 1].getTransposed(), gradient);
+        mul(gradient, learning_rate, gradient);
 
-        Matrix delta_w(layers[i].getWidth(), layers[i + 1].getWidth());
-        /*std::cout << std::endl << " Gradient ";
-        layers[i + 1].getTransposed()->print();
-        std::cout << " Input " <<  std::endl;
-        layers[i].print();
-        std::cout << " Error " << std::endl;
-        errors[i + 1].print();
-        std::cout << "Weights " << std::endl;
-        weights[i].print(); */
-        mul(*layers[i+1].getTransposed(), layers[i], delta_w);
+        Matrix delta_w(layers[i].getWidth(), gradient.getHeight());
+        mul(gradient, layers[i], delta_w);
         subtract(weights[i], *delta_w.getTransposed(), weights[i]);
 
         //edit bias - subtract gradient
-        subtract(bias_weights[i], layers[i + 1], bias_weights[i]);
+        subtract(bias_weights[i], *gradient.getTransposed(), bias_weights[i]);
     }
 }
 
@@ -86,7 +88,8 @@ void NeuralNetwork::learn(const string& filename_inputs, const string& filename_
 
 }
 
-void NeuralNetwork::train_on_batch(const vector<Matrix> &inputs, const RowType &labels) {
+void NeuralNetwork::trainOnBatch(const vector<Matrix> &inputs, const vector<Matrix> &labels) {
+    // TODO momentalne se vahy aktualizuji po kazdem kroku, da se to udelat asi jinak, ale zatim nevim jak
     for(int i = 0; i < inputs.size(); ++i) {
         load_input(inputs[i]);
         propagate();
@@ -100,7 +103,7 @@ void NeuralNetwork::label(const string& filename_input, const string& filename_o
     CSVWriter output = CSVWriter(filename_output);
     while(input.load_matrix(layers[0])) {
         propagate();
-        float label = get_result();
+        float label = get_label();
         output.write_label(label);
     }
 }
@@ -145,6 +148,7 @@ void NeuralNetwork::load_input(RowType input) {
 }
 
 void NeuralNetwork::print_weights() {
+    std::cout << endl;
     for(int i = 0; i < num_layers - 1; ++i) {
         std::cout << "Layer " << i << " weights:" << std::endl;
         weights[i].print();
@@ -152,10 +156,15 @@ void NeuralNetwork::print_weights() {
 }
 
 void NeuralNetwork::print_errors() {
-    for(int i = 0; i < num_layers - 1; ++i) {
+    std::cout << endl;
+    for(int i = 0; i < num_layers; ++i) {
         std::cout << "Layer " << i << " errors:" << std::endl;
         errors[i].print();
     }
+}
+
+float NeuralNetwork::get_result_xor() {
+    return layers[num_layers - 1].get_value(0, 0);
 }
 
 
