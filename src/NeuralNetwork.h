@@ -18,7 +18,6 @@ class NeuralNetwork {
     vector<Matrix> weights;
     vector<Matrix> layers;
     vector<Matrix> bias_weights;
-    vector<Matrix> bias_errors;
     vector<Matrix> errors;
     float (&activation_func) (float);
     float (&d_activation_func) (float);

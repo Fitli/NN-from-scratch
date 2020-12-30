@@ -13,7 +13,6 @@ NeuralNetwork::NeuralNetwork(vector<int>& topology, float (&af) (float), float (
     weights(vector<Matrix>(num_layers-1)),
     layers(vector<Matrix>(num_layers)),
     bias_weights(vector<Matrix>(num_layers-1)),
-    bias_errors(vector<Matrix>(num_layers-1)),
     errors(vector<Matrix>(num_layers)),
     activation_func(af),
     d_activation_func(daf)
@@ -21,14 +20,12 @@ NeuralNetwork::NeuralNetwork(vector<int>& topology, float (&af) (float), float (
 
     // create layers + errors
     for(int i = 0; i < num_layers; i++) {
-        // last cell is bias, all cells are initialized to 1
-        layers[i] = Matrix(topology[i], 1, 1);
+        layers[i] = Matrix(topology[i], 1);
         errors[i] = Matrix(1, topology[i]);
     }
 
     // create weight matrices + bias error
     for(int i = 0; i < num_layers - 1; i++) {
-        bias_errors[i] = Matrix(1, 1);
         weights[i] = Matrix(layers[i+1].getWidth(), layers[i].getWidth());
         bias_weights[i] = Matrix(layers[i+1].getWidth(), 1);
         // Xavier Initialization of weights
@@ -51,10 +48,9 @@ float NeuralNetwork::get_result() {
 }
 
 void NeuralNetwork::backPropagate(float result) {
-    // TODO inicializace chyby pro vic ouptput neuronu
+    // TODO inicializace chyby pro vic ouptput neuronu - tohle funguje jen pro XOR
     errors[num_layers - 1].put_value(get_result() - result, 0, 0);
 
-    // TODO pridat bias
     // TODO learning rate jinde
     float learning_rate = 0.01;
 
@@ -63,7 +59,8 @@ void NeuralNetwork::backPropagate(float result) {
         mul(weights[i], errors[i + 1], errors[i]);
 
         // TODO rozmyslet kam ukladat vysledky - dalsi vektor pro deltu? je ok ukladat mezivysledek do vysledku horni vrstvy? nebo radsi do horni chyby?
-        //count delta of weights
+        //count gradient = epsilon * Error * f'(Output); currently stored in layers[i + 1]
+        //count delta of weights = gradient * Input
         layers[i + 1].apply(d_activation_func);
         elem_mul(errors[i + 1], *layers[i + 1].getTransposed(), *layers[i + 1].getTransposed());
         mul(*layers[i + 1].getTransposed(), learning_rate, *layers[i + 1].getTransposed());
@@ -79,6 +76,9 @@ void NeuralNetwork::backPropagate(float result) {
         weights[i].print(); */
         mul(*layers[i+1].getTransposed(), layers[i], delta_w);
         subtract(weights[i], *delta_w.getTransposed(), weights[i]);
+
+        //edit bias - subtract gradient
+        subtract(bias_weights[i], layers[i + 1], bias_weights[i]);
     }
 }
 
