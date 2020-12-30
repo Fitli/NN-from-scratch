@@ -59,28 +59,26 @@ void NeuralNetwork::backPropagate(float result) {
     float learning_rate = 0.01;
 
     for(int i = num_layers - 2; i >= 0; --i) {
+        //count error
         mul(weights[i], errors[i + 1], errors[i]);
-        // TODO rozmyslet kam ukladat vysledky - dalsi vektor pro gradient?
+
+        // TODO rozmyslet kam ukladat vysledky - dalsi vektor pro deltu? je ok ukladat mezivysledek do vysledku horni vrstvy? nebo radsi do horni chyby?
+        //count delta of weights
         layers[i + 1].apply(d_activation_func);
+        elem_mul(errors[i + 1], *layers[i + 1].getTransposed(), *layers[i + 1].getTransposed());
+        mul(*layers[i + 1].getTransposed(), learning_rate, *layers[i + 1].getTransposed());
 
-        Matrix gradient(layers[i + 1].getWidth(), errors[i + 1].getHeight());
-        mul(errors[i + 1], layers[i + 1], gradient);
-        mul(gradient, learning_rate, gradient);
-
-        Matrix delta_w(layers[i].getWidth(), gradient.getHeight());
-        std::cout << std::endl << " Output ";
-        layers[i + 1].print();
+        Matrix delta_w(layers[i].getWidth(), layers[i + 1].getWidth());
+        /*std::cout << std::endl << " Gradient ";
+        layers[i + 1].getTransposed()->print();
         std::cout << " Input " <<  std::endl;
         layers[i].print();
         std::cout << " Error " << std::endl;
         errors[i + 1].print();
-        std::cout << "Gradient " << std::endl;
-        gradient.print();
         std::cout << "Weights " << std::endl;
-        weights[i].print();
-        mul(gradient, layers[i], delta_w);
-        /*
-        subtract(weights[i], delta_w, weights[i]); */
+        weights[i].print(); */
+        mul(*layers[i+1].getTransposed(), layers[i], delta_w);
+        subtract(weights[i], *delta_w.getTransposed(), weights[i]);
     }
 }
 

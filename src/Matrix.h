@@ -72,6 +72,11 @@ void sum(Matrix& first, Matrix& second, Matrix& result);
  */
 void subtract(Matrix& first, Matrix& second, Matrix& result);
 /*
+ * Put element wise multiplication of matrices `first` and `second` to matrix `result`.
+ * All of the matrices have to have the same dimensions.
+ */
+void elem_mul(Matrix& first, Matrix& second, Matrix& result);
+/*
  * Put matrix multiplication of `first` and `second` to matrix `result`.
  * The three matrices have to have proper dimensions for matrix multiplication.
  */
