@@ -93,7 +93,6 @@ void NeuralNetwork::train_on_batch(const vector<Matrix> &inputs, const RowType &
         backPropagate(labels[i]);
 
     }
-    print_errors();
 }
 
 void NeuralNetwork::label(const string& filename_input, const string& filename_output) {
@@ -111,8 +110,6 @@ void NeuralNetwork::load_input(const Matrix& input) {
     for(int i = 0; i < input.getWidth(); i++) {
         layers[0].put_value(input.get_value(0, i), 0, i);
     }
-    // bias
-    layers[0].put_value(1, 0, input.getWidth());
 }
 
 
