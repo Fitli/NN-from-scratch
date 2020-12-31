@@ -72,9 +72,9 @@ void xor_predefined_net() {
 
 void xor_train() {
 
-    vector<int> topology = vector<int>({2,2,1});
+    vector<int> topology = vector<int>({2,8,1});
     NeuralNetwork network(topology, sigmoid, d_sigmoid);
-    network.setLearningRate(0.01);
+    network.setLearningRate(0.1);
 
     RowType i4({0, 0}); // 0
     MatrixType mt_i4({i4});
@@ -109,7 +109,7 @@ void xor_train() {
     vector<Matrix> y_train({ Matrix(1, 1, 0), Matrix(1, 1, 1), Matrix(1, 1, 0), Matrix(1, 1, 1)});
 
     srand(time(NULL));
-    for(int i = 0; i < 1000; ++i) {
+    for(int i = 0; i < 10000; ++i) {
         int r = rand() % 4;
         network.trainOnBatch({x_train[r]}, {y_train[r]});
     }
