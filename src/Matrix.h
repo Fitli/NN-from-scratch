@@ -57,6 +57,8 @@ public:
     void apply(float (&func)(float));
 
     void xavier_initialization(float n);
+
+    void set_all(float val);
 };
 
 MatrixType new_matrix(int width, int height, float val = 0);
@@ -81,6 +83,11 @@ void elem_mul(Matrix& first, Matrix& second, Matrix& result);
  * The three matrices have to have proper dimensions for matrix multiplication.
  */
 void mul(Matrix& first, Matrix& second, Matrix& result);
+/*
+ * Add matrix multiplication of `first` and `second` to values of matrix `result`.
+ * The three matrices have to have proper dimensions for matrix multiplication.
+ */
+void add_mul(Matrix& first, Matrix& second, Matrix& result);
 /*
  * Put `matrix` multiplied by `num` to matrix `result`.
  * The matrices have to have the same dimensions.

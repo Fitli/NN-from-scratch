@@ -93,6 +93,14 @@ void Matrix::xavier_initialization(float n) {
     }
 }
 
+void Matrix::set_all(float val) {
+    for(int row = 0; row<height; row++) {
+        for(int column = 0; column<width; column++) {
+            this->put_value(val, row, column);
+        }
+    }
+}
+
 
 MatrixType new_matrix(int width, int height, float val) {
     RowType row(width, val);
@@ -161,6 +169,28 @@ void mul(Matrix& first, Matrix& second, Matrix& result){
     for(int row = 0; row < first.getHeight(); row++) {
         for(int column = 0; column < second.getWidth(); column++) {
             float val = mul(first.get_row(row), second.getTransposed()->get_row(column));
+            result.put_value(val, row, column);
+        }
+    }
+
+}
+
+void add_mul(Matrix& first, Matrix& second, Matrix& result){
+    if(first.getWidth() != second.getHeight()) {
+        throw invalid_argument("Wrong matrix size: first width x second height.");
+    }
+    if(first.getHeight() != result.getHeight()) {
+        throw invalid_argument("Wrong matrix size: first x result.");
+    }
+    if(second.getWidth() != result.getWidth()) {
+        throw invalid_argument("Wrong matrix size: second x result.");
+    }
+    // TODO tohle bude pravdepodobne potreba efektivnejsi??
+
+    for(int row = 0; row < first.getHeight(); row++) {
+        for(int column = 0; column < second.getWidth(); column++) {
+            float val = mul(first.get_row(row), second.getTransposed()->get_row(column));
+            val += result.get_value(row, column);
             result.put_value(val, row, column);
         }
     }

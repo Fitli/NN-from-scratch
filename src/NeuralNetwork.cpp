@@ -11,8 +11,10 @@ NeuralNetwork::NeuralNetwork(vector<int>& topology, float (&af) (float), float (
     topology(topology), //je potreba?
     num_layers(topology.size()),
     weights(vector<Matrix>(num_layers-1)),
+    deltas(vector<Matrix>(num_layers-1)),
     layers(vector<Matrix>(num_layers)),
     bias_weights(vector<Matrix>(num_layers-1)),
+    bias_deltas(vector<Matrix>(num_layers-1)),
     errors(vector<Matrix>(num_layers)),
     learning_rate(0.0),
     activation_func(af),
@@ -32,6 +34,9 @@ NeuralNetwork::NeuralNetwork(vector<int>& topology, float (&af) (float), float (
         // Xavier Initialization of weights
         weights[i].xavier_initialization((float)(layers[i].getWidth()));
         bias_weights[i].xavier_initialization((float)(layers[i].getWidth()));
+
+        deltas[i] = Matrix(layers[i].getWidth(), layers[i+1].getWidth());
+        bias_deltas[i] = Matrix(layers[i+1].getWidth(), 1);
     }
 }
 
@@ -75,12 +80,17 @@ void NeuralNetwork::backPropagate(Matrix result) {
         elem_mul(errors[i + 1], *layers[i + 1].getTransposed(), gradient);
         mul(gradient, learning_rate, gradient);
 
-        Matrix delta_w(layers[i].getWidth(), gradient.getHeight());
-        mul(gradient, layers[i], delta_w);
-        subtract(weights[i], *delta_w.getTransposed(), weights[i]);
+        add_mul(gradient, layers[i], deltas[i]);
+        sum(bias_deltas[i], *gradient.getTransposed(), bias_deltas[i]);
+    }
+}
 
-        //edit bias - subtract gradient
-        subtract(bias_weights[i], *gradient.getTransposed(), bias_weights[i]);
+void NeuralNetwork::update_weights() {
+    for(int i = 0; i < num_layers - 1; i++) {
+        subtract(weights[i], *deltas[i].getTransposed(), weights[i]);
+        subtract(bias_weights[i], bias_deltas[i], bias_weights[i]);
+        deltas[i].set_all(0);
+        bias_deltas[i].set_all(0);
     }
 }
 
@@ -89,13 +99,12 @@ void NeuralNetwork::learn(const string& filename_inputs, const string& filename_
 }
 
 void NeuralNetwork::trainOnBatch(const vector<Matrix> &inputs, const vector<Matrix> &labels) {
-    // TODO momentalne se vahy aktualizuji po kazdem kroku, da se to udelat asi jinak, ale zatim nevim jak
     for(int i = 0; i < inputs.size(); ++i) {
         load_input(inputs[i]);
         propagate();
         backPropagate(labels[i]);
-
     }
+    update_weights();
 }
 
 void NeuralNetwork::label(const string& filename_input, const string& filename_output) {

@@ -16,8 +16,10 @@ class NeuralNetwork {
     int num_layers;
     vector<int> topology;
     vector<Matrix> weights;
+    vector<Matrix> deltas;
     vector<Matrix> layers;
     vector<Matrix> bias_weights;
+    vector<Matrix> bias_deltas;
     vector<Matrix> errors;
     float learning_rate;
     float (&activation_func) (float);
@@ -39,6 +41,9 @@ public:
     void print_weights();
     void print_errors();
     float get_result_xor();
+
+    void update_weights();
+
 };
 
 
