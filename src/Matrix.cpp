@@ -124,7 +124,7 @@ void sum(Matrix& first, Matrix& second, Matrix& result) {
     }
 }
 
-void subtract(Matrix& first, Matrix& second, Matrix& result) {
+void subtract(Matrix &first, Matrix &second, Matrix& result) {
     if(first.getHeight() != second.getHeight()  or first.getHeight() != result.getHeight()) {
         throw invalid_argument("Wrong matrix size.");
     }
@@ -138,6 +138,7 @@ void subtract(Matrix& first, Matrix& second, Matrix& result) {
         }
     }
 }
+
 
 void elem_mul(Matrix& first, Matrix& second, Matrix& result) {
     if(first.getHeight() != second.getHeight()  or first.getHeight() != result.getHeight()) {

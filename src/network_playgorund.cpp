@@ -4,6 +4,7 @@
 
 #include "NeuralNetwork.h"
 #include <cmath>
+#include <tuple>
 
 float unit_step(float in) {
     if(in >= 0) {
@@ -72,9 +73,9 @@ void xor_predefined_net() {
 
 void xor_train() {
 
-    vector<int> topology = vector<int>({2,8,8,1});
+    vector<int> topology = vector<int>({2,8,1});
     NeuralNetwork network(topology, sigmoid, d_sigmoid);
-    network.setLearningRate(0.1);
+    network.setLearningRate(0.003);
 
     RowType i4({0, 0}); // 0
     MatrixType mt_i4({i4});
@@ -107,11 +108,12 @@ void xor_train() {
 
     vector<Matrix> x_train({m_i4, m_i3, m_i1, m_i2});
     vector<Matrix> y_train({ Matrix(1, 1, 0), Matrix(1, 1, 1), Matrix(1, 1, 0), Matrix(1, 1, 1)});
+    vector<tuple<Matrix, Matrix>> train({make_tuple(x_train[0], y_train[0]), make_tuple(x_train[1], y_train[1]), make_tuple(x_train[2], y_train[2]), make_tuple(x_train[3], y_train[3])});
 
     srand(time(NULL));
-    for(int i = 0; i < 10000; ++i) {
+    for(int i = 0; i < 100000; ++i) {
         int r = rand() % 4;
-        network.trainOnBatch({x_train}, {y_train});
+        network.trainOnBatch(train, 0, 3);
         if(i%100 == 0) {
             //cout << "iteration: " << i;
             //network.print_errors();
@@ -134,7 +136,45 @@ void xor_train() {
 
 }
 
+void xor_from_file() {
+    vector<int> topology = vector<int>({2,8,1});
+    NeuralNetwork network(topology, sigmoid, d_sigmoid);
+    network.setLearningRate(0.01);
+    network.learn("../../data/xor_vectors.csv", "../../data/xor_labels.csv", 100000, 4);
+
+    RowType i4({0, 0}); // 0
+    MatrixType mt_i4({i4});
+    Matrix m_i4(mt_i4, 2, 1);
+
+    RowType i3({1, 0}); // 1
+    MatrixType mt_i3({i3});
+    Matrix m_i3(mt_i3, 2, 1);
+
+    RowType i2({0, 1}); // 1
+    MatrixType mt_i2({i2});
+    Matrix m_i2(mt_i2, 2, 1);
+
+    RowType i1({1, 1}); // 0
+    MatrixType mt_i1({i1});
+    Matrix m_i1(mt_i1, 2, 1);
+
+    network.load_input(m_i1);
+    network.propagate();
+    cout << endl << "Evaluate on 1, 1 = 0 : " << network.get_result_xor() << endl;
+    network.load_input(m_i2);
+    network.propagate();
+    cout << "Evaluate on 0, 1 = 1 : " << network.get_result_xor() << endl;
+    network.load_input(m_i3);
+    network.propagate();
+    cout << "Evaluate on 1, 0 = 1 : " << network.get_result_xor() << endl;
+    network.load_input(m_i4);
+    network.propagate();
+    cout << "Evaluate on 0, 0 = 0 : " << network.get_result_xor() << endl;
+
+}
+
 int main() {
     //xor_predefined_net();
-    xor_train();
+    //xor_train();
+    xor_from_file();
 }

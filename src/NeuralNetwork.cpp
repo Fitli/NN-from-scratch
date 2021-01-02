@@ -5,10 +5,11 @@
 #include "NeuralNetwork.h"
 
 #include <algorithm>
-
+#include <tuple>
+#include <random>
 
 NeuralNetwork::NeuralNetwork(vector<int>& topology, float (&af) (float), float (&daf) (float)):
-    topology(topology), //je potreba?
+    topology(topology),
     num_layers(topology.size()),
     weights(vector<Matrix>(num_layers-1)),
     deltas(vector<Matrix>(num_layers-1)),
@@ -27,7 +28,7 @@ NeuralNetwork::NeuralNetwork(vector<int>& topology, float (&af) (float), float (
         errors[i] = Matrix(1, topology[i]);
     }
 
-    // create weight matrices + bias error
+    // create weight matrices + buffers for error
     for(int i = 0; i < num_layers - 1; i++) {
         weights[i] = Matrix(layers[i+1].getWidth(), layers[i].getWidth());
         bias_weights[i] = Matrix(layers[i+1].getWidth(), 1);
@@ -56,12 +57,12 @@ Matrix NeuralNetwork::get_result() {
     return layers[num_layers - 1];
 }
 
-float NeuralNetwork::get_label() {
-    float max_label_index = std::max_element(layers[num_layers - 1].get_row(0).begin(),layers[num_layers - 1].get_row(0).end()) - layers[num_layers - 1].get_row(0).begin();
+int NeuralNetwork::get_label() {
+    int max_label_index = std::max_element(layers[num_layers - 1].get_row(0).begin(),layers[num_layers - 1].get_row(0).end()) - layers[num_layers - 1].get_row(0).begin();
     return max_label_index;
 }
 
-void NeuralNetwork::backPropagate(Matrix result) {
+void NeuralNetwork::backPropagate(Matrix& result) {
     // initialization of error
     subtract(layers[num_layers - 1], result, errors[num_layers - 1]);
     //std::cout << "Wanted result " << result.get_value(0, 0) << endl;
@@ -94,15 +95,42 @@ void NeuralNetwork::update_weights() {
     }
 }
 
-void NeuralNetwork::learn(const string& filename_inputs, const string& filename_labels) {
+void NeuralNetwork::learn(const string& filename_inputs, const string& filename_labels, int epochs, int batch_size) {
+    // read pictures and labels from files
+    CSVReader pictures = CSVReader(filename_inputs);
+    CSVReader labels = CSVReader(filename_labels);
+    vector<tuple<Matrix, Matrix>> inputs;
+    while(true) {
+        tuple<Matrix, Matrix> t = make_tuple(Matrix(topology[0], 1), Matrix(topology[num_layers - 1], 1, 0));
+
+        if (!pictures.load_matrix(get<0>(t))) break;
+        int l;
+        if (!labels.load_label(l)) break;
+
+        // get<1>(t).put_value(1, l, 1); //for MNIST
+        get<1>(t).put_value(l, 0, 0); //for XOR
+
+        inputs.push_back(move(t));
+    }
+
+    std::random_device rd;
+    std::mt19937 g(rd());
+
+    for(int i = 0; i < epochs; ++i) {
+        cout << "Starting epoch " << i + 1 << " out of " << epochs << endl;
+        std::shuffle(std::begin(inputs), std::end(inputs), g);
+        for(int b = 0; (b + batch_size) <= inputs.size(); b+=batch_size) {
+            trainOnBatch(inputs, b, b + batch_size);
+        }
+    }
 
 }
 
-void NeuralNetwork::trainOnBatch(const vector<Matrix> &inputs, const vector<Matrix> &labels) {
-    for(int i = 0; i < inputs.size(); ++i) {
-        load_input(inputs[i]);
+void NeuralNetwork::trainOnBatch(vector <tuple<Matrix, Matrix>>& input, int start, int end) {
+    for(int i = start; i < end; ++i) {
+        load_input(get<0>(input[i]));
         propagate();
-        backPropagate(labels[i]);
+        backPropagate(get<1>(input[i]));
     }
     update_weights();
 }
@@ -112,7 +140,7 @@ void NeuralNetwork::label(const string& filename_input, const string& filename_o
     CSVWriter output = CSVWriter(filename_output);
     while(input.load_matrix(layers[0])) {
         propagate();
-        float label = get_label();
+        int label = get_label();
         output.write_label(label);
     }
 }

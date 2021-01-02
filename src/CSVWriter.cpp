@@ -6,6 +6,6 @@
 
 CSVWriter::CSVWriter(const string &filename): out(ofstream(filename)){}
 
-bool CSVWriter::write_label(float &label) {
+bool CSVWriter::write_label(int &label) {
     return bool(out << label << endl);
 }

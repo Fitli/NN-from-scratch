@@ -3,11 +3,10 @@
 //
 
 #include "CSVReader.h"
-#include <fstream>
 #include <sstream>
 #include <iostream>
 
-CSVReader::CSVReader(const string &filename):in(ifstream(filename)){}
+CSVReader::CSVReader(const string &filename): inp(ifstream(filename)){}
 
 /**
  * load one input vector from a csv file and save it to `matrix`
@@ -17,7 +16,7 @@ CSVReader::CSVReader(const string &filename):in(ifstream(filename)){}
 bool CSVReader::load_matrix(Matrix &matrix) {
     int width = matrix.getWidth();
     string line;
-    getline(in, line);
+    getline(inp, line);
     stringstream line_ss(line);
     for(int i = 0; i < width; i++) {
         string val;
@@ -34,7 +33,7 @@ bool CSVReader::load_matrix(Matrix &matrix) {
  * @param label output
  * @return true if successful
  */
-bool CSVReader::load_label(float &label) {
-    return bool(in >> label);
+bool CSVReader::load_label(int &label) {
+    return bool(inp >> label);
 
 }

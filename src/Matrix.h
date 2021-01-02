@@ -38,7 +38,7 @@ public:
     int getWidth() const;
 
     /*
-     * Return pointer to the transposed matrix. Create it in case it does not exist.
+     * Return pointer to the transposed matrix. Create it inp case it does not exist.
      */
     Matrix *getTransposed();
 
@@ -72,7 +72,7 @@ void sum(Matrix& first, Matrix& second, Matrix& result);
  * Put subtraction of matrices `first` and `second` to matrix `result`.
  * All of the matrices have to have the same dimensions.
  */
-void subtract(Matrix& first, Matrix& second, Matrix& result);
+void subtract(Matrix &first, Matrix &second, Matrix& result);
 /*
  * Put element wise multiplication of matrices `first` and `second` to matrix `result`.
  * All of the matrices have to have the same dimensions.

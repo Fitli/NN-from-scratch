@@ -13,7 +13,7 @@ class CSVWriter {
     ofstream out;
 public:
     explicit CSVWriter(const string &filename);
-    bool write_label(float &label);
+    bool write_label(int &label);
 };
 
 

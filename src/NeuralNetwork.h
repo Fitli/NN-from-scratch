@@ -5,7 +5,6 @@
 #ifndef SRC_NEURALNETWORK_H
 #define SRC_NEURALNETWORK_H
 
-#include <vector>
 
 #include "Matrix.h"
 #include "CSVReader.h"
@@ -31,10 +30,10 @@ public:
     void load_input(const Matrix& input);
     void propagate();
     Matrix get_result();
-    float get_label();
-    void backPropagate(Matrix result);
-    void learn(const string& filename_inputs, const string& filename_labels);
-    void trainOnBatch(const vector<Matrix> &inputs, const vector<Matrix>& labels);
+    int get_label();
+    void backPropagate(Matrix& result);
+    void learn(const string& filename_inputs, const string& filename_labels, int epochs, int batch_size);
+    void trainOnBatch(vector <tuple<Matrix, Matrix>>& input, int start, int end);
     void label(const string& filename_input, const string& filename_output);
     void setWeights(vector<MatrixType> weights);
     void setBias(vector<MatrixType> w);
