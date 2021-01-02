@@ -22,7 +22,13 @@ Matrix::Matrix(MatrixType matrix, int width, int height) :
         matrix(std::move(matrix)), transposed(nullptr), width(width), height(height){}
 
 Matrix::Matrix(Matrix *transposed, int width, int height) : Matrix(width, height) {
-    transposed = transposed;
+    this->transposed = transposed;
+    for(int row = 0; row<height; row++) {
+        for (int column = 0; column < width; column++) {
+            float val = transposed->get_value(column, row);
+            put_value(val, row, column, false);
+        }
+    }
 }
 
 float Matrix::get_value(int row, int column) const {
@@ -49,12 +55,6 @@ Matrix *Matrix::getTransposed(){
         transposed = new Matrix(this, height, width);
         // TODO asi chce kontrolu validniho ukazatele
         // mozna by bylo lepsi make_unique<Matrix>(this, height, width), #include <memory>
-    }
-    for(int row = 0; row<height; row++) {
-        for(int column = 0; column<width; column++) {
-            float val = get_value(row, column);
-            transposed->put_value(val, column, row, false);
-        }
     }
     return transposed;
 }
