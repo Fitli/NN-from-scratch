@@ -64,7 +64,7 @@ int NeuralNetwork::get_label() {
 
 void NeuralNetwork::backPropagate(Matrix& result) {
     // initialization of error
-    subtract(layers[num_layers - 1], result, errors[num_layers - 1]);
+    subtract(layers[num_layers - 1], result, *errors[num_layers - 1].getTransposed());
     //std::cout << "Wanted result " << result.get_value(0, 0) << endl;
     //std::cout << "Guessed result " << layers[num_layers - 1].get_value(0, 0) << endl;
 
