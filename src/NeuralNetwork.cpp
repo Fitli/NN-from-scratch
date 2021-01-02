@@ -77,7 +77,7 @@ void NeuralNetwork::backPropagate(Matrix result) {
         //count delta of weights = gradient * Input
         Matrix gradient = *layers[i + 1].getTransposed();
         gradient.apply(d_activation_func);
-        elem_mul(errors[i + 1], *layers[i + 1].getTransposed(), gradient);
+        elem_mul(errors[i + 1], gradient, gradient);
         mul(gradient, learning_rate, gradient);
 
         add_mul(gradient, layers[i], deltas[i]);
