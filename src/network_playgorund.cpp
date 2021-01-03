@@ -3,23 +3,8 @@
 //
 
 #include "NeuralNetwork.h"
-#include <cmath>
+#include "activation_functions.h"
 #include <tuple>
-
-float unit_step(float in) {
-    if(in >= 0) {
-        return 1;
-    }
-    return 0;
-}
-
-float sigmoid(float in) {
-    return 1 / (1 + (float)(std::exp(-in)));
-}
-
-float d_sigmoid(float in) { //hack - derivace pocita s aplikovanim sigmoidu na inner potential neuronu
-    return in * (1 - in);
-}
 
 /**
  * Create network for XOR with predefined weights and test NeuralNetwork.propagate()
@@ -173,8 +158,58 @@ void xor_from_file() {
 
 }
 
+void xor_from_file2() {
+    vector<int> topology = vector<int>({2,8,2});
+    NeuralNetwork network(topology, sigmoid, d_sigmoid);
+    network.setLearningRate(0.01);
+    network.learn("../../data/xor_vectors.csv", "../../data/xor_labels.csv", 10000, 4);
+
+    RowType i4({0, 0}); // 0
+    MatrixType mt_i4({i4});
+    Matrix m_i4(mt_i4, 2, 1);
+
+    RowType i3({1, 0}); // 1
+    MatrixType mt_i3({i3});
+    Matrix m_i3(mt_i3, 2, 1);
+
+    RowType i2({0, 1}); // 1
+    MatrixType mt_i2({i2});
+    Matrix m_i2(mt_i2, 2, 1);
+
+    RowType i1({1, 1}); // 0
+    MatrixType mt_i1({i1});
+    Matrix m_i1(mt_i1, 2, 1);
+
+    network.load_input(m_i1);
+    network.propagate();
+    cout << endl << "Evaluate on 1, 1 = 0 : " << network.get_label() << endl;
+    cout << network.get_result().get_value(0, 0) << " " << network.get_result().get_value(0, 1)  << endl;
+    network.load_input(m_i2);
+    network.propagate();
+    cout << "Evaluate on 0, 1 = 1 : " << network.get_label() << endl;
+    cout << network.get_result().get_value(0, 0) << " " << network.get_result().get_value(0, 1)  << endl;
+    network.load_input(m_i3);
+    network.propagate();
+    cout << "Evaluate on 1, 0 = 1 : " << network.get_label() << endl;
+    cout << network.get_result().get_value(0, 0) << " " << network.get_result().get_value(0, 1)  << endl;
+    network.load_input(m_i4);
+    network.propagate();
+    cout << "Evaluate on 0, 0 = 0 : " << network.get_label() << endl;
+    cout << network.get_result().get_value(0, 0) << " " << network.get_result().get_value(0, 1)  << endl;
+}
+
+void fmnist_from_file() {
+    vector<int> topology = vector<int>({784, 10});
+    NeuralNetwork network(topology, sigmoid, d_sigmoid);
+    network.setLearningRate(0.001);
+    network.learn("../../data/fashion_mnist_train_vectors.csv", "../../data/fashion_mnist_train_labels.csv", 5, 64);
+    network.label("../../data/fashion_mnist_test_vectors.csv", "../../data/fashion_mnist_test_predicted.csv");
+}
+
 int main() {
     //xor_predefined_net();
     //xor_train();
     xor_from_file();
+    //xor_from_file2();
+    //fmnist_from_file();
 }

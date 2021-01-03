@@ -14,7 +14,8 @@ add_executable(main
         NeuralNetwork.cpp
         NeuralNetwork.h
         CSVWriter.cpp
-        CSVWriter.h)
+        CSVWriter.h
+        activation_functions.cpp activation_functions.h)
 add_executable(matrix_playground
         matrix_playground.cpp
         Matrix.cpp
@@ -36,4 +37,5 @@ add_executable(network_playgorund
         CSVWriter.h
         NeuralNetwork.cpp
         NeuralNetwork.h
-        network_playgorund.cpp)
+        network_playgorund.cpp
+        activation_functions.cpp activation_functions.h)
