@@ -59,6 +59,8 @@ public:
     void xavier_initialization(float n);
 
     void set_all(float val);
+
+    float exp_sum() const;
 };
 
 MatrixType new_matrix(int width, int height, float val = 0);

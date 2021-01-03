@@ -33,3 +33,13 @@ float d_relu(float in) { // hack - je jedno, jestli aplikujeme až po aplikaci r
     }
     return 1;
 }
+
+void softmax(Matrix& m) {
+    float s = m.exp_sum();
+    for(int row = 0; row < m.getHeight(); ++row) {
+        for(int column = 0; column < m.getWidth(); ++column) {
+            float val = (float)(std::exp(m.get_value(row, column))) / s;
+            m.put_value(val, row, column);
+        }
+    }
+}

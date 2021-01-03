@@ -101,6 +101,16 @@ void Matrix::set_all(float val) {
     }
 }
 
+float Matrix::exp_sum() const {
+    float s = 0;
+    for(int i = 0; i < height; ++i) {
+        for(int j = 0; j < width; ++j) {
+            s += (float)(std::exp(this->get_value(i, j)));
+        }
+    }
+    return s;
+}
+
 
 MatrixType new_matrix(int width, int height, float val) {
     RowType row(width, val);

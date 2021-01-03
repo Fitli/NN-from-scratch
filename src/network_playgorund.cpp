@@ -161,8 +161,7 @@ void xor_from_file() {
 void xor_from_file2() {
     vector<int> topology = vector<int>({2,8,2});
     NeuralNetwork network(topology, sigmoid, d_sigmoid);
-    network.setLearningRate(0.01);
-    network.learn("../../data/xor_vectors.csv", "../../data/xor_labels.csv", 10000, 4);
+    network.setLearningRate(0.001);
 
     RowType i4({0, 0}); // 0
     MatrixType mt_i4({i4});
@@ -196,6 +195,27 @@ void xor_from_file2() {
     network.propagate();
     cout << "Evaluate on 0, 0 = 0 : " << network.get_label() << endl;
     cout << network.get_result().get_value(0, 0) << " " << network.get_result().get_value(0, 1)  << endl;
+
+    cout << "Learning" << endl;
+    network.learn("../../data/xor_vectors.csv", "../../data/xor_labels.csv", 50000, 4);
+
+
+    network.load_input(m_i1);
+    network.propagate();
+    cout << endl << "Evaluate on 1, 1 = 0 : " << network.get_label() << endl;
+    cout << network.get_result().get_value(0, 0) << " " << network.get_result().get_value(0, 1)  << endl;
+    network.load_input(m_i2);
+    network.propagate();
+    cout << "Evaluate on 0, 1 = 1 : " << network.get_label() << endl;
+    cout << network.get_result().get_value(0, 0) << " " << network.get_result().get_value(0, 1)  << endl;
+    network.load_input(m_i3);
+    network.propagate();
+    cout << "Evaluate on 1, 0 = 1 : " << network.get_label() << endl;
+    cout << network.get_result().get_value(0, 0) << " " << network.get_result().get_value(0, 1)  << endl;
+    network.load_input(m_i4);
+    network.propagate();
+    cout << "Evaluate on 0, 0 = 0 : " << network.get_label() << endl;
+    cout << network.get_result().get_value(0, 0) << " " << network.get_result().get_value(0, 1)  << endl;
 }
 
 void fmnist_from_file() {
@@ -209,7 +229,7 @@ void fmnist_from_file() {
 int main() {
     //xor_predefined_net();
     //xor_train();
-    xor_from_file();
-    //xor_from_file2();
+    //xor_from_file();
+    xor_from_file2();
     //fmnist_from_file();
 }

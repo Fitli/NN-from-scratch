@@ -3,6 +3,7 @@
 //
 
 #include "NeuralNetwork.h"
+#include "activation_functions.h"
 
 #include <algorithm>
 #include <tuple>
@@ -49,7 +50,11 @@ void NeuralNetwork::propagate() {
     for(int i = 0; i < num_layers - 1; i++) {
         mul(layers[i], weights[i], layers[i+1]);
         sum(layers[i+1], bias_weights[i], layers[i + 1]);
-        layers[i+1].apply(activation_func);
+        if(i == num_layers - 2) {
+            softmax(layers[i+1]);
+        } else {
+            layers[i+1].apply(activation_func);
+        }
     }
 }
 
@@ -76,9 +81,14 @@ void NeuralNetwork::backPropagate(Matrix& result) {
         // TODO rozmyslet kam ukladat vysledky
         //count gradient = epsilon * Error * f'(Output)
         //count delta of weights = gradient * Input
-        Matrix gradient = *layers[i + 1].getTransposed();
-        gradient.apply(d_activation_func);
-        elem_mul(errors[i + 1], gradient, gradient);
+        Matrix gradient;
+        if(i == num_layers - 2) {
+             gradient = errors[i + 1];
+        } else {
+            gradient = *layers[i + 1].getTransposed();
+            gradient.apply(d_activation_func);
+            elem_mul(errors[i + 1], gradient, gradient);
+        }
         mul(gradient, learning_rate, gradient);
 
         add_mul(gradient, layers[i], deltas[i]);
@@ -106,9 +116,8 @@ void NeuralNetwork::learn(const string& filename_inputs, const string& filename_
         if (!pictures.load_matrix(get<0>(t))) break;
         int l;
         if (!labels.load_label(l)) break;
-
-        // get<1>(t).put_value(1, l, 1); //for MNIST
-        get<1>(t).put_value(l, 0, 0); //for XOR
+        get<1>(t).put_value(1, 0, l); //for MNIST TODO
+        //get<1>(t).put_value(l, 0, 0); //for XOR
 
         inputs.push_back(move(t));
     }
@@ -117,7 +126,7 @@ void NeuralNetwork::learn(const string& filename_inputs, const string& filename_
     std::mt19937 g(rd());
 
     for(int i = 0; i < epochs; ++i) {
-        cout << "Starting epoch " << i + 1 << " out of " << epochs << endl;
+        // cout << "Starting epoch " << i + 1 << " out of " << epochs << endl;
         std::shuffle(std::begin(inputs), std::end(inputs), g);
         for(int b = 0; (b + batch_size) <= inputs.size(); b+=batch_size) {
             trainOnBatch(inputs, b, b + batch_size);

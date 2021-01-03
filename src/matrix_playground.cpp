@@ -48,4 +48,11 @@ int main() {
     } catch (invalid_argument& e) {
         cout << e.what() << endl;
     }
+
+    RowType a1({1, 1, 0});
+
+    MatrixType a3({a1});
+    Matrix m = Matrix(a3);
+    m.print();
+    cout << m.exp_sum();
 };
