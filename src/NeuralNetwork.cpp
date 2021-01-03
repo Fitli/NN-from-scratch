@@ -51,7 +51,7 @@ void NeuralNetwork::propagate() {
         mul(layers[i], weights[i], layers[i+1]);
         sum(layers[i+1], bias_weights[i], layers[i + 1]);
         if(i == num_layers - 2) {
-            softmax(layers[i+1]);
+            stable_softmax(layers[i+1]);
         } else {
             layers[i+1].apply(activation_func);
         }

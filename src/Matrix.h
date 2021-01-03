@@ -61,6 +61,8 @@ public:
     void set_all(float val);
 
     float exp_sum() const;
+
+    float max() const;
 };
 
 MatrixType new_matrix(int width, int height, float val = 0);
@@ -75,6 +77,7 @@ void sum(Matrix& first, Matrix& second, Matrix& result);
  * All of the matrices have to have the same dimensions.
  */
 void subtract(Matrix &first, Matrix &second, Matrix& result);
+void subtract(Matrix &first, float num, Matrix& result);
 /*
  * Put element wise multiplication of matrices `first` and `second` to matrix `result`.
  * All of the matrices have to have the same dimensions.

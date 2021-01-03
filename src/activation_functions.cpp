@@ -43,3 +43,9 @@ void softmax(Matrix& m) {
         }
     }
 }
+
+void stable_softmax(Matrix& m) {
+    float max = m.max();
+    subtract(m, max, m);
+    softmax(m);
+}

@@ -111,6 +111,19 @@ float Matrix::exp_sum() const {
     return s;
 }
 
+float Matrix::max() const {
+    float max = get_value(0, 0);
+    for(int i = 0; i < height; ++i) {
+        for(int j = 0; j < width; ++j) {
+            float val = get_value(i, j);
+            if(val > max) {
+                max = val;
+            }
+        }
+    }
+    return max;
+}
+
 
 MatrixType new_matrix(int width, int height, float val) {
     RowType row(width, val);
@@ -149,6 +162,20 @@ void subtract(Matrix &first, Matrix &second, Matrix& result) {
     }
 }
 
+void subtract(Matrix &first, float num, Matrix& result) {
+    if(first.getHeight() != result.getHeight()) {
+        throw invalid_argument("Wrong matrix size.");
+    }
+    if(first.getWidth() != result.getWidth()) {
+        throw invalid_argument("Wrong matrix size.");
+    }
+    for(int row = 0; row < first.getHeight(); row++) {
+        for(int column = 0; column < first.getWidth(); column++) {
+            float val = first.get_value(row, column) - num;
+            result.put_value(val, row, column);
+        }
+    }
+}
 
 void elem_mul(Matrix& first, Matrix& second, Matrix& result) {
     if(first.getHeight() != second.getHeight()  or first.getHeight() != result.getHeight()) {
