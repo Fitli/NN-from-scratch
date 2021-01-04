@@ -229,6 +229,16 @@ void mul(Matrix& first, Matrix& second, Matrix& result, bool to_transposed){
 
 }
 
+void mul1d(Matrix& first, Matrix& second, Matrix& result, bool to_transposed, bool update_transposed) {
+    RowType& col = second.get_row(0);
+    RowType& row = first.getTransposed(update_transposed)->get_row(0);
+    for(int r = 0; r < row.size(); r++) {
+        for(int c = 0; c < col.size(); c++) {
+            result.put_value(row[r]*col[c], r, c, to_transposed);
+        }
+    }
+}
+
 void add_mul(Matrix& first, Matrix& second, Matrix& result, bool to_transposed){
     /*if(first.getWidth() != second.getHeight()) {
         throw invalid_argument("Wrong matrix size: first width x second height.");
@@ -255,7 +265,7 @@ void add_mul1d(Matrix& first, Matrix& second, Matrix& result, bool to_transposed
     RowType& row = first.getTransposed(update_transposed)->get_row(0);
     for(int r = 0; r < row.size(); r++) {
         for(int c = 0; c < col.size(); c++) {
-            result.add_value(row[r]*col[c], r, c);
+            result.add_value(row[r]*col[c], r, c, to_transposed);
         }
     }
 }

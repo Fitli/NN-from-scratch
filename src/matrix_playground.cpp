@@ -55,4 +55,16 @@ int main() {
     Matrix m = Matrix(a3);
     m.print();
     cout << m.exp_sum();
+
+    RowType vr = {1,2,3};
+    RowType vc1 = {4};
+    RowType vc2 = {5};
+    Matrix o = {3, 2};
+    MatrixType mr = {vr};
+    Matrix r(mr);
+    MatrixType mc = {vc1, vc2};
+    Matrix c(mc);
+
+    add_mul1d(c, r, o);
+    o.print();
 };

@@ -90,6 +90,7 @@ void elem_mul(Matrix& first, Matrix& second, Matrix& result, bool to_transposed 
  * The three matrices have to have proper dimensions for matrix multiplication.
  */
 void mul(Matrix& first, Matrix& second, Matrix& result, bool to_transposed = true);
+void mul1d(Matrix& first, Matrix& second, Matrix& result, bool to_transposed = true, bool update_transposed = false);
 /*
  * Add matrix multiplication of `first` and `second` to values of matrix `result`.
  * The three matrices have to have proper dimensions for matrix multiplication.
