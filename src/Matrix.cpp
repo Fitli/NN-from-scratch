@@ -149,12 +149,12 @@ MatrixType new_matrix(int width, int height, float val) {
 
 
 void sum(Matrix& first, Matrix& second, Matrix& result, bool to_transposed) {
-    if(first.getHeight() != second.getHeight()  or first.getHeight() != result.getHeight()) {
+    /*if(first.getHeight() != second.getHeight()  or first.getHeight() != result.getHeight()) {
         throw invalid_argument("Wrong matrix size.");
     }
     if(first.getWidth() != second.getWidth()  or first.getWidth() != result.getWidth()) {
         throw invalid_argument("Wrong matrix size.");
-    }
+    }*/
     for(int row = 0; row < first.getHeight(); row++) {
         for(int column = 0; column < first.getWidth(); column++) {
             float val = first.get_value(row, column) + second.get_value(row, column);
@@ -164,12 +164,12 @@ void sum(Matrix& first, Matrix& second, Matrix& result, bool to_transposed) {
 }
 
 void subtract(Matrix &first, Matrix &second, Matrix& result, bool to_transposed) {
-    if(first.getHeight() != second.getHeight()  or first.getHeight() != result.getHeight()) {
+    /*if(first.getHeight() != second.getHeight()  or first.getHeight() != result.getHeight()) {
         throw invalid_argument("Wrong matrix size.");
     }
     if(first.getWidth() != second.getWidth()  or first.getWidth() != result.getWidth()) {
         throw invalid_argument("Wrong matrix size.");
-    }
+    }*/
     for(int row = 0; row < first.getHeight(); row++) {
         for(int column = 0; column < first.getWidth(); column++) {
             float val = first.get_value(row, column) - second.get_value(row, column);
@@ -179,12 +179,12 @@ void subtract(Matrix &first, Matrix &second, Matrix& result, bool to_transposed)
 }
 
 void subtract(Matrix &first, float num, Matrix& result, bool to_transposed) {
-    if(first.getHeight() != result.getHeight()) {
+    /*if(first.getHeight() != result.getHeight()) {
         throw invalid_argument("Wrong matrix size.");
     }
     if(first.getWidth() != result.getWidth()) {
         throw invalid_argument("Wrong matrix size.");
-    }
+    }*/
     for(int row = 0; row < first.getHeight(); row++) {
         for(int column = 0; column < first.getWidth(); column++) {
             float val = first.get_value(row, column) - num;
@@ -194,12 +194,12 @@ void subtract(Matrix &first, float num, Matrix& result, bool to_transposed) {
 }
 
 void elem_mul(Matrix& first, Matrix& second, Matrix& result, bool to_transposed) {
-    if(first.getHeight() != second.getHeight()  or first.getHeight() != result.getHeight()) {
+    /*if(first.getHeight() != second.getHeight()  or first.getHeight() != result.getHeight()) {
         throw invalid_argument("Wrong matrix size.");
     }
     if(first.getWidth() != second.getWidth()  or first.getWidth() != result.getWidth()) {
         throw invalid_argument("Wrong matrix size.");
-    }
+    }*/
     for(int row = 0; row < first.getHeight(); row++) {
         for(int column = 0; column < first.getWidth(); column++) {
             float val = first.get_value(row, column) * second.get_value(row, column);
@@ -209,7 +209,7 @@ void elem_mul(Matrix& first, Matrix& second, Matrix& result, bool to_transposed)
 }
 
 void mul(Matrix& first, Matrix& second, Matrix& result, bool to_transposed){
-    if(first.getWidth() != second.getHeight()) {
+    /*if(first.getWidth() != second.getHeight()) {
         throw invalid_argument("Wrong matrix size: first width x second height.");
     }
     if(first.getHeight() != result.getHeight()) {
@@ -217,8 +217,7 @@ void mul(Matrix& first, Matrix& second, Matrix& result, bool to_transposed){
     }
     if(second.getWidth() != result.getWidth()) {
         throw invalid_argument("Wrong matrix size: second x result.");
-    }
-    // TODO tohle bude pravdepodobne potreba efektivnejsi??
+    }*/
 
     int size = first.getWidth();
     for(int row = 0; row < first.getHeight(); row++) {
@@ -231,7 +230,7 @@ void mul(Matrix& first, Matrix& second, Matrix& result, bool to_transposed){
 }
 
 void add_mul(Matrix& first, Matrix& second, Matrix& result, bool to_transposed){
-    if(first.getWidth() != second.getHeight()) {
+    /*if(first.getWidth() != second.getHeight()) {
         throw invalid_argument("Wrong matrix size: first width x second height.");
     }
     if(first.getHeight() != result.getHeight()) {
@@ -239,8 +238,7 @@ void add_mul(Matrix& first, Matrix& second, Matrix& result, bool to_transposed){
     }
     if(second.getWidth() != result.getWidth()) {
         throw invalid_argument("Wrong matrix size: second x result.");
-    }
-    // TODO tohle bude pravdepodobne potreba efektivnejsi??
+    }*/
 
     int size = first.getWidth();
     for(int row = 0; row < first.getHeight(); row++) {
@@ -253,12 +251,12 @@ void add_mul(Matrix& first, Matrix& second, Matrix& result, bool to_transposed){
 }
 
 void mul(Matrix &matrix, float num, Matrix &result, bool to_transposed) {
-    if(matrix.getHeight() != result.getHeight()) {
+    /*if(matrix.getHeight() != result.getHeight()) {
         throw invalid_argument("Wrong matrix size.");
     }
     if(matrix.getWidth() != result.getWidth()) {
         throw invalid_argument("Wrong matrix size.");
-    }
+    }*/
     for(int row = 0; row < matrix.getHeight(); row++) {
         for(int column = 0; column < matrix.getWidth(); column++) {
             float val = matrix.get_value(row, column) * num;
