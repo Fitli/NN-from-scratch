@@ -83,22 +83,25 @@ void NeuralNetwork::backPropagate(Matrix& result) {
         //count delta of weights = gradient * Input
         Matrix gradient;
         if(i == num_layers - 2) {
-             gradient = errors[i + 1];
+            gradient = errors[i+1];
+            //gradient = *layers[i + 1].getTransposed();
+            //d_softmax(*gradient.getTransposed(), result_idx);
+            //elem_mul(errors[i + 1], gradient, gradient);
         } else {
             gradient = *layers[i + 1].getTransposed();
-            gradient.apply(d_activation_func);
-            elem_mul(errors[i + 1], gradient, gradient);
+            gradient.apply(d_activation_func, false);
+            elem_mul(errors[i + 1], gradient, gradient, false);
         }
-        mul(gradient, learning_rate, gradient);
+        mul(gradient, learning_rate, gradient, false);
 
-        add_mul(gradient, layers[i], deltas[i]);
-        sum(bias_deltas[i], *gradient.getTransposed(), bias_deltas[i]);
+        add_mul(gradient, layers[i], deltas[i], false);
+        sum(bias_deltas[i], *gradient.getTransposed(true), bias_deltas[i]);
     }
 }
 
 void NeuralNetwork::update_weights() {
     for(int i = 0; i < num_layers - 1; i++) {
-        subtract(weights[i], *deltas[i].getTransposed(), weights[i]);
+        subtract(weights[i], *deltas[i].getTransposed(true), weights[i]);
         subtract(bias_weights[i], bias_deltas[i], bias_weights[i]);
         deltas[i].set_all(0);
         bias_deltas[i].set_all(0);
@@ -126,9 +129,10 @@ void NeuralNetwork::learn(const string& filename_inputs, const string& filename_
     std::mt19937 g(rd());
 
     for(int i = 0; i < epochs; ++i) {
-        // cout << "Starting epoch " << i + 1 << " out of " << epochs << endl;
+         cout << "Starting epoch " << i + 1 << " out of " << epochs << endl;
         std::shuffle(std::begin(inputs), std::end(inputs), g);
         for(int b = 0; (b + batch_size) <= inputs.size(); b+=batch_size) {
+            //cout << "Starting batch " << (b/batch_size) + 1 << " out of " << inputs.size()/batch_size << endl;
             trainOnBatch(inputs, b, b + batch_size);
         }
     }
