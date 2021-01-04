@@ -93,10 +93,6 @@ void NeuralNetwork::backPropagate(Matrix& result) {
         Matrix gradient(1, layers[i+1].getWidth());
         if(i == num_layers - 2) {
             subtract(layers[num_layers - 1], result, *gradient.getTransposed());
-            //gradient = errors[i+1];
-            //gradient = *layers[i + 1].getTransposed();
-            //d_softmax(*gradient.getTransposed(), result_idx);
-            //elem_mul(errors[i + 1], gradient, gradient);
         } else {
             gradient = *layers[i + 1].getTransposed();
             gradient.apply(d_activation_func, false);
@@ -109,8 +105,9 @@ void NeuralNetwork::backPropagate(Matrix& result) {
     }
 }
 
-void NeuralNetwork::update_weights() {
+void NeuralNetwork::update_weights(int batch_size) {
     for(int i = 0; i < num_layers - 1; i++) {
+        mul(deltas[i], 1.0/batch_size, deltas[i]);
         subtract(weights[i], *deltas[i].getTransposed(true), weights[i]);
         subtract(bias_weights[i], bias_deltas[i], bias_weights[i]);
         deltas[i].set_all(0);
@@ -148,7 +145,7 @@ void NeuralNetwork::learn(const string& filename_inputs, const string& filename_
     std::random_device rd;
     std::mt19937 g(rd());
 
-    ofstream f("../../data/accuracies2.csv");
+    //ofstream f("../../data/accuracies2.csv");
 
     for(int i = 0; i < epochs; ++i) {
 
@@ -158,7 +155,7 @@ void NeuralNetwork::learn(const string& filename_inputs, const string& filename_
         for(int b = 0; (b + batch_size) <= inputs.size(); b+=batch_size) {
             //cout << "Starting batch " << (b/batch_size) + 1 << " out of " << inputs.size()/batch_size << endl;
             trainOnBatch(inputs, b, b + batch_size);
-            print_validation(f, validation, false);
+            //print_validation(f, validation, false);
         }
 
         print_validation(std::cout, validation, true);
@@ -173,7 +170,7 @@ void NeuralNetwork::trainOnBatch(vector <tuple<Matrix, Matrix>>& input, int star
         propagate();
         backPropagate(get<1>(input[i]));
     }
-    update_weights();
+    update_weights(input.size());
 }
 
 void NeuralNetwork::label(const string& filename_input, const string& filename_output) {

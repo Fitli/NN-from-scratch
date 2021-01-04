@@ -43,7 +43,7 @@ public:
     void print_weight_stats(ostream& s);
     float get_result_xor();
 
-    void update_weights();
+    void update_weights(int batch_size);
 
 };
 
