@@ -95,6 +95,7 @@ void mul(Matrix& first, Matrix& second, Matrix& result, bool to_transposed = tru
  * The three matrices have to have proper dimensions for matrix multiplication.
  */
 void add_mul(Matrix& first, Matrix& second, Matrix& result, bool to_transposed = true);
+void add_mul1d(Matrix& first, Matrix& second, Matrix& result, bool to_transposed = true, bool update_transposed = false);
 /*
  * Put `matrix` multiplied by `num` to matrix `result`.
  * The matrices have to have the same dimensions.

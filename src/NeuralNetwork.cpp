@@ -94,8 +94,8 @@ void NeuralNetwork::backPropagate(Matrix& result) {
         }
         mul(gradient, learning_rate, gradient, false);
 
-        add_mul(gradient, layers[i], deltas[i], false);
-        sum(bias_deltas[i], *gradient.getTransposed(true), bias_deltas[i]);
+        add_mul1d(gradient, layers[i], deltas[i], false, true);
+        sum(bias_deltas[i], *gradient.getTransposed(), bias_deltas[i]);
     }
 }
 
