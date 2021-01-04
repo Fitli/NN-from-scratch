@@ -63,6 +63,8 @@ public:
     float exp_sum() const;
 
     float max() const;
+    float min() const;
+    float mean() const;
 
     void add_value(float value, int row, int column, bool to_transposed = true);
 };

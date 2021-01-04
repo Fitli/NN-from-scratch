@@ -138,24 +138,20 @@ void NeuralNetwork::learn(const string& filename_inputs, const string& filename_
     std::random_device rd;
     std::mt19937 g(rd());
 
+    ofstream f("../../data/accuracies2.csv");
+
     for(int i = 0; i < epochs; ++i) {
+
+
          cout << "Starting epoch " << i + 1 << " out of " << epochs << endl;
         std::shuffle(std::begin(inputs), std::end(inputs), g);
         for(int b = 0; (b + batch_size) <= inputs.size(); b+=batch_size) {
             //cout << "Starting batch " << (b/batch_size) + 1 << " out of " << inputs.size()/batch_size << endl;
             trainOnBatch(inputs, b, b + batch_size);
+            print_validation(f, validation, false);
         }
 
-        // validate
-        int correct = 0;
-        for(auto& value: validation) {
-            load_input(get<0>(value));
-            propagate();
-            if(get_label() == std::max_element(get<1>(value).get_row(0).begin(),get<1>(value).get_row(0).end()) - get<1>(value).get_row(0).begin()) {
-                ++correct;
-            }
-        }
-        cout << "Accuracy on validation set of size " << validation_size << " : " << (correct*1.0) / validation_size << endl;
+        print_validation(std::cout, validation, true);
 
     }
 
@@ -237,6 +233,33 @@ void NeuralNetwork::print_errors() {
 
 float NeuralNetwork::get_result_xor() {
     return layers[num_layers - 1].get_value(0, 0);
+}
+
+void NeuralNetwork::print_validation(ostream& s, vector<tuple<Matrix, Matrix>> validation, bool human) {
+    // validate
+    int correct = 0;
+    for(auto& value: validation) {
+        load_input(get<0>(value));
+        propagate();
+        if(get_label() == std::max_element(get<1>(value).get_row(0).begin(),get<1>(value).get_row(0).end()) - get<1>(value).get_row(0).begin()) {
+            ++correct;
+        }
+    }
+    if(human) {
+        s << "Accuracy on validation set of size " << validation.size() << " : " << (correct * 1.0) / validation.size() << endl;
+    }
+    else {
+        s << (correct * 1.0) / validation.size() << endl;
+    }
+}
+
+void NeuralNetwork::print_weight_stats(ostream& s) {
+    for(int i = 0; i < num_layers - 1; i++) {
+        s << "weights between layers " << i << "-" << i+1 << endl;
+        s << "\tMin:" << weights[i].min();
+        s << "\tMax:" << weights[i].max();
+        s << "\tMean:" << weights[i].mean();
+    }
 }
 
 

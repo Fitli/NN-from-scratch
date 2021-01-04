@@ -39,6 +39,8 @@ public:
     void setBias(vector<MatrixType> w);
     void print_weights();
     void print_errors();
+    void print_validation(ostream& s, vector<tuple<Matrix, Matrix>> validation, bool human = true);
+    void print_weight_stats(ostream& s);
     float get_result_xor();
 
     void update_weights();

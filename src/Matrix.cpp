@@ -140,6 +140,30 @@ float Matrix::max() const {
     return max;
 }
 
+float Matrix::min() const {
+    float min = get_value(0, 0);
+    for(int i = 0; i < height; ++i) {
+        for(int j = 0; j < width; ++j) {
+            float val = get_value(i, j);
+            if(val < min) {
+                min = val;
+            }
+        }
+    }
+    return min;
+}
+
+float Matrix::mean() const {
+    float sum = 0;
+    for(int i = 0; i < height; ++i) {
+        for(int j = 0; j < width; ++j) {
+            float val = get_value(i, j);
+            sum += val;
+        }
+    }
+    return sum/(getWidth() * getHeight());
+}
+
 
 MatrixType new_matrix(int width, int height, float val) {
     RowType row(width, val);
