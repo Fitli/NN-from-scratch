@@ -113,6 +113,10 @@ void NeuralNetwork::learn(const string& filename_inputs, const string& filename_
     CSVReader pictures = CSVReader(filename_inputs);
     CSVReader labels = CSVReader(filename_labels);
     vector<tuple<Matrix, Matrix>> inputs;
+    vector<tuple<Matrix, Matrix>> validation;
+    int k = 0;
+    int validation_size = 10000;
+
     while(true) {
         tuple<Matrix, Matrix> t = make_tuple(Matrix(topology[0], 1), Matrix(topology[num_layers - 1], 1, 0));
 
@@ -122,9 +126,15 @@ void NeuralNetwork::learn(const string& filename_inputs, const string& filename_
         get<1>(t).put_value(1, 0, l); //for MNIST TODO
         //get<1>(t).put_value(l, 0, 0); //for XOR
 
-        inputs.push_back(move(t));
+        if(k >= 60000 - validation_size) {
+            validation.push_back(move(t));
+        } else {
+            inputs.push_back(move(t));
+        }
+        k++;
     }
 
+    // train
     std::random_device rd;
     std::mt19937 g(rd());
 
@@ -135,6 +145,18 @@ void NeuralNetwork::learn(const string& filename_inputs, const string& filename_
             //cout << "Starting batch " << (b/batch_size) + 1 << " out of " << inputs.size()/batch_size << endl;
             trainOnBatch(inputs, b, b + batch_size);
         }
+
+        // validate
+        int correct = 0;
+        for(auto& value: validation) {
+            load_input(get<0>(value));
+            propagate();
+            if(get_label() == std::max_element(get<1>(value).get_row(0).begin(),get<1>(value).get_row(0).end()) - get<1>(value).get_row(0).begin()) {
+                ++correct;
+            }
+        }
+        cout << "Accuracy on validation set of size " << validation_size << " : " << (correct*1.0) / validation_size << endl;
+
     }
 
 }
