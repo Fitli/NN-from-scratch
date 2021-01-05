@@ -85,7 +85,8 @@ void NeuralNetwork::backPropagate(Matrix& result) {
 
     for(int i = num_layers - 2; i >= 0; --i) {
         //count error
-        mul(weights[i], errors[i + 1], errors[i]);
+        //mul(weights[i], errors[i + 1], errors[i]);
+        //subtract(layers[num_layers - 1], result, *gradient.getTransposed());
 
         // TODO rozmyslet kam ukladat vysledky
         //count gradient = epsilon * Error * f'(Output)
@@ -94,10 +95,12 @@ void NeuralNetwork::backPropagate(Matrix& result) {
         if(i == num_layers - 2) {
             subtract(layers[num_layers - 1], result, *gradient.getTransposed());
         } else {
-            gradient = *layers[i + 1].getTransposed();
+            sum(gradient, *layers[i+1].getTransposed(), gradient);
+            //gradient = *layers[i + 1].getTransposed();
             gradient.apply(d_activation_func, false);
             elem_mul(errors[i + 1], gradient, gradient, false);
         }
+        mul(weights[i], gradient, errors[i]);
         mul(gradient, learning_rate, gradient, false);
 
         add_mul1d(gradient, layers[i], deltas[i], false, true);
@@ -159,6 +162,9 @@ void NeuralNetwork::learn(const string& filename_inputs, const string& filename_
         }
 
         print_validation(std::cout, validation, true);
+        print_weight_stats(std::cout);
+        print_layer_stats(std::cout);
+        learning_rate *= 0.6;
 
     }
 
@@ -265,7 +271,16 @@ void NeuralNetwork::print_weight_stats(ostream& s) {
         s << "weights between layers " << i << "-" << i+1 << endl;
         s << "\tMin:" << weights[i].min();
         s << "\tMax:" << weights[i].max();
-        s << "\tMean:" << weights[i].mean();
+        s << "\tMean:" << weights[i].mean() << endl;
+    }
+}
+
+void NeuralNetwork::print_layer_stats(ostream& s) {
+    for(int i = 0; i < num_layers; i++) {
+        s << "Layer " << i << ":" << endl;
+        s << "\tMin:" << layers[i].min();
+        s << "\tMax:" << layers[i].max();
+        s << "\tMean:" << layers[i].mean() << endl;
     }
 }
 

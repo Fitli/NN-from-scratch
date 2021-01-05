@@ -45,6 +45,7 @@ public:
 
     void update_weights(int batch_size);
 
+    void print_layer_stats(ostream &s);
 };
 
 
