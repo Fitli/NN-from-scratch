@@ -98,6 +98,15 @@ void Matrix::apply(float (&func)(float), bool to_transposed) {
     }
 }
 
+void Matrix::apply2(float (&func)(float, float), float arg, bool to_transposed) {
+    for(int row = 0; row<height; row++) {
+        for(int column = 0; column<width; column++) {
+            float val = this->get_value(row, column);
+            this->put_value(func(val, arg), row, column, to_transposed);
+        }
+    }
+}
+
 void Matrix::xavier_initialization(float n, bool to_transposed) {
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::default_random_engine generator(seed);

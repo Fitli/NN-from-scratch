@@ -16,9 +16,11 @@ class NeuralNetwork {
     vector<int> topology;
     vector<Matrix> weights;
     vector<Matrix> deltas;
+    vector<Matrix> square_gradients;
     vector<Matrix> layers;
     vector<Matrix> bias_weights;
     vector<Matrix> bias_deltas;
+    vector<Matrix> bias_square_gradients;
     vector<Matrix> errors;
     float learning_rate;
     float (&activation_func) (float);
@@ -32,7 +34,7 @@ public:
     Matrix get_result();
     int get_label();
     void backPropagate(Matrix& result);
-    void learn(const string& filename_inputs, const string& filename_labels, int epochs, int batch_size);
+    void learn(const string& filename_inputs, const string& filename_labels, int epochs, int batch_size, float lr_decrease);
     void trainOnBatch(vector <tuple<Matrix, Matrix>>& input, int start, int end);
     void label(const string& filename_input, const string& filename_output);
     void setWeights(vector<MatrixType> weights);
@@ -44,6 +46,7 @@ public:
     float get_result_xor();
 
     void update_weights(int batch_size);
+    void update_weights_RMS(int batch_size, float beta=0.9, float ni=0.001);
 
     void print_layer_stats(ostream &s);
 };

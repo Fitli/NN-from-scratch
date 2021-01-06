@@ -14,9 +14,11 @@ NeuralNetwork::NeuralNetwork(vector<int>& topology, float (&af) (float), float (
     num_layers(topology.size()),
     weights(vector<Matrix>(num_layers-1)),
     deltas(vector<Matrix>(num_layers-1)),
+    square_gradients(vector<Matrix>(num_layers-1)),
     layers(vector<Matrix>(num_layers)),
     bias_weights(vector<Matrix>(num_layers-1)),
     bias_deltas(vector<Matrix>(num_layers-1)),
+    bias_square_gradients(vector<Matrix>(num_layers-1)),
     errors(vector<Matrix>(num_layers)),
     learning_rate(0.0),
     activation_func(af),
@@ -39,6 +41,9 @@ NeuralNetwork::NeuralNetwork(vector<int>& topology, float (&af) (float), float (
 
         deltas[i] = Matrix(layers[i].getWidth(), layers[i+1].getWidth());
         bias_deltas[i] = Matrix(layers[i+1].getWidth(), 1);
+
+        square_gradients[i] = Matrix(layers[i+1].getWidth(), layers[i].getWidth());
+        bias_square_gradients[i] = Matrix(layers[i+1].getWidth(), 1);
     }
 }
 
@@ -101,16 +106,72 @@ void NeuralNetwork::backPropagate(Matrix& result) {
             elem_mul(errors[i + 1], gradient, gradient, false);
         }
         mul(weights[i], gradient, errors[i]);
-        mul(gradient, learning_rate, gradient, false);
+        //mul(gradient, learning_rate, gradient, false);
 
         add_mul1d(gradient, layers[i], deltas[i], false, true);
         sum(bias_deltas[i], *gradient.getTransposed(), bias_deltas[i]);
     }
 }
 
-void NeuralNetwork::update_weights(int batch_size) {
+float square(float in) {
+    return in*in;
+}
+
+float RMS_eps(float in, float ni) {
+    return ni / (sqrt(in) + 0.00000001);
+}
+
+void NeuralNetwork::update_weights_RMS(int batch_size, float beta, float ni) {
     for(int i = 0; i < num_layers - 1; i++) {
         mul(deltas[i], 1.0/batch_size, deltas[i]);
+
+        Matrix helper(topology[i+1], topology[i]);
+        sum(*deltas[i].getTransposed(true), helper, helper);
+        helper.apply(square);
+        mul(helper, 1-beta, helper);
+
+        mul(square_gradients[i], beta, square_gradients[i]);
+        //cout << "old_deltas:" << "max:" << deltas[i].max() << " min:"<< deltas[i].min() << " mean:" << deltas[i].mean() << "[111][1]" << deltas[i].get_value(1,111) << endl;
+        sum(helper, square_gradients[i], square_gradients[i]);
+        //cout << "squares:" << "max:" << square_gradients[i].max() << " min:"<< square_gradients[i].min() << " mean:" << square_gradients[i].mean() << "[11][11]" << square_gradients[i].get_value(111,1) << endl;
+
+        helper.set_all(0);
+        sum(helper, square_gradients[i], helper);
+        helper.apply2(RMS_eps, ni);
+        //cout << "rates:" << "max:" << helper.max() << " min:"<< helper.min() << " mean:" << helper.mean() << "[11][11]" << helper.get_value(111,1) << endl;
+        elem_mul(helper, *deltas[i].getTransposed(), helper);
+        //cout << "deltas:" << "max:" << helper.max() << " min:"<< helper.min() << " mean:" << helper.mean() << "[11][11]" << helper.get_value(111,1) << endl;
+
+        subtract(weights[i], helper, weights[i]);
+
+        deltas[i].set_all(0);
+
+        // the same for bias weights
+        mul(bias_deltas[i], 1.0/batch_size, bias_deltas[i]);
+
+        Matrix bias_helper(topology[i+1], 1);
+        sum(bias_deltas[i], bias_helper, bias_helper);
+        bias_helper.apply(square);
+        mul(bias_helper, 1-beta, bias_helper);
+
+        mul(bias_square_gradients[i], beta, bias_square_gradients[i]);
+        sum(bias_helper, bias_square_gradients[i], bias_square_gradients[i]);
+
+        bias_helper.set_all(0);
+        sum(bias_helper, bias_square_gradients[i], bias_helper);
+        bias_helper.apply2(RMS_eps, ni);
+        elem_mul(bias_helper, bias_deltas[i], bias_helper);
+
+        subtract(bias_weights[i], bias_helper, bias_weights[i]);
+
+        bias_deltas[i].set_all(0);
+    }
+}
+
+void NeuralNetwork::update_weights(int batch_size) {
+    for(int i = 0; i < num_layers - 1; i++) {
+        mul(deltas[i], 1.0/batch_size * learning_rate, deltas[i]);
+        mul(bias_deltas[i], 1.0/batch_size * learning_rate, bias_deltas[i]);
         subtract(weights[i], *deltas[i].getTransposed(true), weights[i]);
         subtract(bias_weights[i], bias_deltas[i], bias_weights[i]);
         deltas[i].set_all(0);
@@ -118,7 +179,7 @@ void NeuralNetwork::update_weights(int batch_size) {
     }
 }
 
-void NeuralNetwork::learn(const string& filename_inputs, const string& filename_labels, int epochs, int batch_size) {
+void NeuralNetwork::learn(const string& filename_inputs, const string& filename_labels, int epochs, int batch_size, float lr_decrease) {
     // read pictures and labels from files
     CSVReader pictures = CSVReader(filename_inputs);
     CSVReader labels = CSVReader(filename_labels);
@@ -164,7 +225,7 @@ void NeuralNetwork::learn(const string& filename_inputs, const string& filename_
         print_validation(std::cout, validation, true);
         print_weight_stats(std::cout);
         print_layer_stats(std::cout);
-        learning_rate *= 0.6;
+        learning_rate *= lr_decrease;
 
     }
 
@@ -176,7 +237,7 @@ void NeuralNetwork::trainOnBatch(vector <tuple<Matrix, Matrix>>& input, int star
         propagate();
         backPropagate(get<1>(input[i]));
     }
-    update_weights(input.size());
+    update_weights_RMS(input.size());
 }
 
 void NeuralNetwork::label(const string& filename_input, const string& filename_output) {

@@ -55,6 +55,7 @@ public:
     void print();
 
     void apply(float (&func)(float), bool to_transposed = true);
+    void apply2(float (&func)(float, float), float arg, bool to_transposed = true);
 
     void xavier_initialization(float n, bool to_transposed = true);
 

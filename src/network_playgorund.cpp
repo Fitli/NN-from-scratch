@@ -124,8 +124,8 @@ void xor_train() {
 void xor_from_file() {
     vector<int> topology = vector<int>({2,8,1});
     NeuralNetwork network(topology, sigmoid, d_sigmoid);
-    network.setLearningRate(0.01);
-    network.learn("../../data/xor_vectors.csv", "../../data/xor_labels.csv", 100000, 4);
+    network.setLearningRate(0.001);
+    network.learn("../../data/xor_vectors.csv", "../../data/xor_labels.csv", 1000, 4, 1);
 
     RowType i4({0, 0}); // 0
     MatrixType mt_i4({i4});
@@ -159,8 +159,8 @@ void xor_from_file() {
 }
 
 void xor_from_file2() {
-    vector<int> topology = vector<int>({2,8,2});
-    NeuralNetwork network(topology, sigmoid, d_sigmoid);
+    vector<int> topology = vector<int>({2,100, 100,2});
+    NeuralNetwork network(topology, relu, d_relu);
     network.setLearningRate(0.001);
 
     RowType i4({0, 0}); // 0
@@ -197,7 +197,7 @@ void xor_from_file2() {
     cout << network.get_result().get_value(0, 0) << " " << network.get_result().get_value(0, 1)  << endl;
 
     cout << "Learning" << endl;
-    network.learn("../../data/xor_vectors.csv", "../../data/xor_labels.csv", 50000, 4);
+    network.learn("../../data/xor_vectors.csv", "../../data/xor_labels.csv", 2000, 4, 1);
 
 
     network.load_input(m_i1);
@@ -219,17 +219,17 @@ void xor_from_file2() {
 }
 
 void fmnist_from_file() {
-    vector<int> topology = vector<int>({784, 10});
-    NeuralNetwork network(topology, sigmoid, d_sigmoid);
-    network.setLearningRate(0.001);
-    network.learn("../../data/fashion_mnist_train_vectors.csv", "../../data/fashion_mnist_train_labels.csv", 5, 64);
-    network.label("../../data/fashion_mnist_test_vectors.csv", "../../data/fashion_mnist_test_predicted.csv");
+    vector<int> topology = vector<int>({784, 256, 64, 10});
+    NeuralNetwork network(topology, relu, d_relu);
+    network.setLearningRate(0.05);
+    network.learn("../../data/fashion_mnist_train_vectors.csv", "../../data/fashion_mnist_train_labels.csv", 40, 256, 0.85);
+    //network.label("../../data/fashion_mnist_test_vectors.csv", "../../data/fashion_mnist_test_predicted.csv");
 }
 
 int main() {
     //xor_predefined_net();
     //xor_train();
     //xor_from_file();
-    xor_from_file2();
-    //fmnist_from_file();
+    //xor_from_file2();
+    fmnist_from_file();
 }
