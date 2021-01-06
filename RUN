@@ -11,7 +11,7 @@ echo "#################"
 echo "    COMPILING    "
 echo "#################"
 
-g++ src/network_playgorund.cpp src/CSVReader.h src/CSVReader.cpp src/Matrix.cpp src/Matrix.h src/CSVWriter.cpp src/CSVWriter.h src/NeuralNetwork.cpp src/NeuralNetwork.h src/activation_functions.cpp src/activation_functions.h -Ofast -ffp-contract=fast -funsafe-math-optimizations -march=native -msse2 -mfpmath=sse -ftree-vectorize -std=c++17 -o network
+g++ src/main.cpp src/CSVReader.h src/CSVReader.cpp src/Matrix.cpp src/Matrix.h src/CSVWriter.cpp src/CSVWriter.h src/NeuralNetwork.cpp src/NeuralNetwork.h src/activation_functions.cpp src/activation_functions.h -Ofast -ffp-contract=fast -funsafe-math-optimizations -march=native -msse2 -mfpmath=sse -ftree-vectorize -std=c++17 -o network
 
 # g++ -Wall -std=c++17 -O3 src/main.cpp src/file2 -o network
 
