@@ -209,12 +209,14 @@ void NeuralNetwork::learn(const string& filename_inputs, const string& filename_
     std::random_device rd;
     std::mt19937 g(rd());
 
+    float val_acc;
+
     //ofstream f("../../data/accuracies2.csv");
 
     for(int i = 0; i < epochs; ++i) {
 
 
-         cout << "Starting epoch " << i + 1 << " out of " << epochs << endl;
+        cout << "Starting epoch " << i + 1 << " out of " << epochs << endl;
         std::shuffle(std::begin(inputs), std::end(inputs), g);
         for(int b = 0; (b + batch_size) <= inputs.size(); b+=batch_size) {
             //cout << "Starting batch " << (b/batch_size) + 1 << " out of " << inputs.size()/batch_size << endl;
@@ -222,9 +224,13 @@ void NeuralNetwork::learn(const string& filename_inputs, const string& filename_
             //print_validation(f, validation, false);
         }
 
-        print_validation(std::cout, validation, true);
-        print_weight_stats(std::cout);
-        print_layer_stats(std::cout);
+        val_acc = print_validation(std::cout, validation, true);
+        if(val_acc >= 0.883) {
+            cout << "High accuracy, stopping.\n";
+            return;
+        }
+        //print_weight_stats(std::cout);
+        //print_layer_stats(std::cout);
         learning_rate *= lr_decrease;
 
     }
@@ -243,6 +249,7 @@ void NeuralNetwork::trainOnBatch(vector <tuple<Matrix, Matrix>>& input, int star
 void NeuralNetwork::label(const string& filename_input, const string& filename_output) {
     CSVReader input = CSVReader(filename_input);
     CSVWriter output = CSVWriter(filename_output);
+    cout << "Labeling.\n";
     while(input.load_matrix(layers[0])) {
         propagate();
         int label = get_label();
@@ -309,7 +316,7 @@ float NeuralNetwork::get_result_xor() {
     return layers[num_layers - 1].get_value(0, 0);
 }
 
-void NeuralNetwork::print_validation(ostream& s, vector<tuple<Matrix, Matrix>> validation, bool human) {
+float NeuralNetwork::print_validation(ostream& s, vector<tuple<Matrix, Matrix>> validation, bool human) {
     // validate
     int correct = 0;
     for(auto& value: validation) {
@@ -319,12 +326,14 @@ void NeuralNetwork::print_validation(ostream& s, vector<tuple<Matrix, Matrix>> v
             ++correct;
         }
     }
+    float acc = (correct * 1.0) / validation.size();
     if(human) {
-        s << "Accuracy on validation set of size " << validation.size() << " : " << (correct * 1.0) / validation.size() << endl;
+        s << "Accuracy on validation set of size " << validation.size() << " : " << acc << endl;
     }
     else {
-        s << (correct * 1.0) / validation.size() << endl;
+        s << acc << endl;
     }
+    return acc;
 }
 
 void NeuralNetwork::print_weight_stats(ostream& s) {
