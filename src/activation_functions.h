@@ -18,6 +18,7 @@ float relu(float in);
 float d_relu(float in);
 
 void softmax(Matrix& m);
+
 void stable_softmax(Matrix& m);
 
 #endif //SRC_ACTIVATION_FUNCTIONS_H

@@ -224,8 +224,8 @@ void fmnist_from_file() {
     vector<int> topology = vector<int>({784, 256, 128, 10});
     NeuralNetwork network(topology, relu, d_relu);
     network.setLearningRate(0.05);
-    network.learn("../../data/fashion_mnist_train_vectors.csv", "../../data/fashion_mnist_train_labels.csv", 45, 256, 0.85);
-    network.label("../../data/fashion_mnist_test_vectors.csv", "../../data/fashion_mnist_test_predicted.csv");
+    network.learn("../../data/fashion_mnist_train_vectors.csv", "../../data/fashion_mnist_train_labels.csv", 100, 256, 0.85);
+    network.label("../../data/fashion_mnist_test_vectors.csv", "../../data/actualTestPredictions.csv");
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> diff1 = end-begin;
     cout << "Time to train the network: " << diff1.count()/60 << " min\n";

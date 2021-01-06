@@ -60,8 +60,6 @@ int Matrix::getWidth() const {
 Matrix *Matrix::getTransposed(bool update){
     if(transposed == nullptr) {
         transposed = new Matrix(this, height, width);
-        // TODO asi chce kontrolu validniho ukazatele
-        // mozna by bylo lepsi make_unique<Matrix>(this, height, width), #include <memory>
         return transposed;
     }
     if(update) {

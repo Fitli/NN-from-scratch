@@ -34,7 +34,7 @@ public:
     Matrix get_result();
     int get_label();
     void backPropagate(Matrix& result);
-    void learn(const string& filename_inputs, const string& filename_labels, int epochs, int batch_size, float lr_decrease);
+    void learn(const string& filename_inputs, const string& filename_labels, int epochs, int batch_size, float lr_decrease = 1);
     void trainOnBatch(vector <tuple<Matrix, Matrix>>& input, int start, int end);
     void label(const string& filename_input, const string& filename_output);
     void setWeights(vector<MatrixType> weights);

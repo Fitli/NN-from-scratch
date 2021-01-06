@@ -83,30 +83,18 @@ void NeuralNetwork::backPropagate(Matrix& result) {
             errors[num_layers - 1].put_value(0, i, 0);
         }
     }
-    //subtract(layers[num_layers - 1], result, *errors[num_layers - 1].getTransposed());
-    //std::cout << "Wanted result " << result.get_value(0, 0) << endl;
-    //std::cout << "Guessed result " << layers[num_layers - 1].get_value(0, 0) << endl;
-
 
     for(int i = num_layers - 2; i >= 0; --i) {
-        //count error
-        //mul(weights[i], errors[i + 1], errors[i]);
-        //subtract(layers[num_layers - 1], result, *gradient.getTransposed());
-
-        // TODO rozmyslet kam ukladat vysledky
-        //count gradient = epsilon * Error * f'(Output)
-        //count delta of weights = gradient * Input
+        //count gradient and delta of weights and bias
         Matrix gradient(1, layers[i+1].getWidth());
         if(i == num_layers - 2) {
             subtract(layers[num_layers - 1], result, *gradient.getTransposed());
         } else {
             sum(gradient, *layers[i+1].getTransposed(), gradient);
-            //gradient = *layers[i + 1].getTransposed();
             gradient.apply(d_activation_func, false);
             elem_mul(errors[i + 1], gradient, gradient, false);
         }
         mul(weights[i], gradient, errors[i]);
-        //mul(gradient, learning_rate, gradient, false);
 
         add_mul1d(gradient, layers[i], deltas[i], false, true);
         sum(bias_deltas[i], *gradient.getTransposed(), bias_deltas[i]);
@@ -131,16 +119,12 @@ void NeuralNetwork::update_weights_RMS(int batch_size, float beta, float ni) {
         mul(helper, 1-beta, helper);
 
         mul(square_gradients[i], beta, square_gradients[i]);
-        //cout << "old_deltas:" << "max:" << deltas[i].max() << " min:"<< deltas[i].min() << " mean:" << deltas[i].mean() << "[111][1]" << deltas[i].get_value(1,111) << endl;
         sum(helper, square_gradients[i], square_gradients[i]);
-        //cout << "squares:" << "max:" << square_gradients[i].max() << " min:"<< square_gradients[i].min() << " mean:" << square_gradients[i].mean() << "[11][11]" << square_gradients[i].get_value(111,1) << endl;
 
         helper.set_all(0);
         sum(helper, square_gradients[i], helper);
         helper.apply2(RMS_eps, ni);
-        //cout << "rates:" << "max:" << helper.max() << " min:"<< helper.min() << " mean:" << helper.mean() << "[11][11]" << helper.get_value(111,1) << endl;
         elem_mul(helper, *deltas[i].getTransposed(), helper);
-        //cout << "deltas:" << "max:" << helper.max() << " min:"<< helper.min() << " mean:" << helper.mean() << "[11][11]" << helper.get_value(111,1) << endl;
 
         subtract(weights[i], helper, weights[i]);
 
@@ -190,13 +174,11 @@ void NeuralNetwork::learn(const string& filename_inputs, const string& filename_
 
     while(true) {
         tuple<Matrix, Matrix> t = make_tuple(Matrix(topology[0], 1), Matrix(topology[num_layers - 1], 1, 0));
-
         if (!pictures.load_matrix(get<0>(t))) break;
         int l;
         if (!labels.load_label(l)) break;
-        get<1>(t).put_value(1, 0, l); //for MNIST TODO
-        //get<1>(t).put_value(l, 0, 0); //for XOR
-
+        get<1>(t).put_value(1, 0, l);
+        //validation split
         if(k >= 60000 - validation_size) {
             validation.push_back(move(t));
         } else {
@@ -208,10 +190,7 @@ void NeuralNetwork::learn(const string& filename_inputs, const string& filename_
     // train
     std::random_device rd;
     std::mt19937 g(rd());
-
     float val_acc;
-
-    //ofstream f("../../data/accuracies2.csv");
 
     for(int i = 0; i < epochs; ++i) {
 
@@ -219,18 +198,14 @@ void NeuralNetwork::learn(const string& filename_inputs, const string& filename_
         cout << "Starting epoch " << i + 1 << " out of " << epochs << endl;
         std::shuffle(std::begin(inputs), std::end(inputs), g);
         for(int b = 0; (b + batch_size) <= inputs.size(); b+=batch_size) {
-            //cout << "Starting batch " << (b/batch_size) + 1 << " out of " << inputs.size()/batch_size << endl;
             trainOnBatch(inputs, b, b + batch_size);
-            //print_validation(f, validation, false);
         }
-
+        //validate
         val_acc = print_validation(std::cout, validation, true);
         if(val_acc >= 0.883) {
             cout << "High accuracy, stopping.\n";
             return;
         }
-        //print_weight_stats(std::cout);
-        //print_layer_stats(std::cout);
         learning_rate *= lr_decrease;
 
     }
@@ -262,6 +237,25 @@ void NeuralNetwork::load_input(const Matrix& input) {
     for(int i = 0; i < input.getWidth(); i++) {
         layers[0].put_value(input.get_value(0, i), 0, i);
     }
+}
+
+float NeuralNetwork::print_validation(ostream& s, vector<tuple<Matrix, Matrix>> validation, bool human) {
+    int correct = 0;
+    for(auto& value: validation) {
+        load_input(get<0>(value));
+        propagate();
+        if(get_label() == std::max_element(get<1>(value).get_row(0).begin(),get<1>(value).get_row(0).end()) - get<1>(value).get_row(0).begin()) {
+            ++correct;
+        }
+    }
+    float acc = (correct * 1.0) / validation.size();
+    if(human) {
+        s << "Accuracy on validation set of size " << validation.size() << " : " << acc << endl;
+    }
+    else {
+        s << acc << endl;
+    }
+    return acc;
 }
 
 
@@ -314,26 +308,6 @@ void NeuralNetwork::print_errors() {
 
 float NeuralNetwork::get_result_xor() {
     return layers[num_layers - 1].get_value(0, 0);
-}
-
-float NeuralNetwork::print_validation(ostream& s, vector<tuple<Matrix, Matrix>> validation, bool human) {
-    // validate
-    int correct = 0;
-    for(auto& value: validation) {
-        load_input(get<0>(value));
-        propagate();
-        if(get_label() == std::max_element(get<1>(value).get_row(0).begin(),get<1>(value).get_row(0).end()) - get<1>(value).get_row(0).begin()) {
-            ++correct;
-        }
-    }
-    float acc = (correct * 1.0) / validation.size();
-    if(human) {
-        s << "Accuracy on validation set of size " << validation.size() << " : " << acc << endl;
-    }
-    else {
-        s << acc << endl;
-    }
-    return acc;
 }
 
 void NeuralNetwork::print_weight_stats(ostream& s) {

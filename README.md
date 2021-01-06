@@ -1,18 +1,19 @@
+## 468964 & 469217
 # PV021 project | deep learning from scratch
 **This file may not be up-to-date; read forum, emails, etc.**
 
 ### Consider using this folder structure (data, src, etc.)
 
-Your task is simple. Implement a feed-forward neural network in C/C++ (or Rust/Swift with limited language support) and train it on a given dataset using a backpropagation algorithm. The dataset is Fashion MNIST [0],  a modern version of a well-known MNIST [1]. Fashion-MNIST is a dataset of Zalando's article images ‒ consisting of a training set of 60,000 examples and a test set of 10,000 examples. Each example is a 28x28 grayscale image, associated with a label from 10 classes. The dataset in CSV format will be uploaded in IS in study materials. There are four data files — two data files as input vectors and two data files with a list of expected predictions.
+Your task is simple. Implement a feed-forward neural network inp C/C++ (or Rust/Swift with limited language support) and train it on a given dataset using a backpropagation algorithm. The dataset is Fashion MNIST [0],  a modern version of a well-known MNIST [1]. Fashion-MNIST is a dataset of Zalando's article images ‒ consisting of a training set of 60,000 examples and a test set of 10,000 examples. Each example is a 28x28 grayscale image, associated with a label from 10 classes. The dataset inp CSV format will be uploaded inp IS inp study materials. There are four data files — two data files as input vectors and two data files with a list of expected predictions.
 The deadline is set for January 6th, 2021.
 Some rules about implementations:
 
 1. Your implementation must be compilable and runnable on the AISA server.
     1. If you know what you are doing and dare to implement the project for a GPU, please email me first [2].
 2. The project must contain a runnable script called "RUN" which compiles,
-executes and exports everything in "one-click".
+executes and exports everything inp "one-click".
 3. The implementation must export vectors of train and test predictions.
-    3. Exported predictions must be in the same format as is
+    3. Exported predictions must be inp the same format as is
 "actualPredictionsExample" file ‒ on each line is only one number present.
 Such number on i-th line represents predicted class index (there are classes
 0 - 9 for Fashion MNIST) for i-th input vector; hence prediction order is relevant.
@@ -23,9 +24,9 @@ not touch test data except the evaluation of the already trained model.
 of the already trained model, it will be automatically marked as a failed
 project.
     4. Why is that ‒ an optimal scenario would hide for you any test data, but
-in that case, you would have to deal with serialization and deserialization of
+inp that case, you would have to deal with serialization and deserialization of
 your implementations, or you would have to be bound to some given interface and
-this is just not wanted in this course.
+this is just not wanted inp this course.
     4. Don't cheat. Your implementations will be checked by hand.
     4. Please write doc-strigs where reasonable (high-level functions, complicated functions with unusual names). The documentation will not be judged. But it's a good practice, you do not work alone, and it'll make reading your implementation easier.
 5. It's demanded to reach at least 88% of correct test predictions
@@ -57,12 +58,12 @@ immediately. I won't have time for half of you day before the deadline.
 ## Some tips:
 - solve the XOR problem first. XOR is a very nice example as a benchmark of the
 working learning process with at least one hidden layer. Btw, the presented network
-solving XOR in the lecture is minimal and it can be hard to find, so consider
-more neurons in the hidden layer. If you can't solve the XOR problem, you can't
+solving XOR inp the lecture is minimal and it can be hard to find, so consider
+more neurons inp the hidden layer. If you can't solve the XOR problem, you can't
 solve Fashion MNIST.
 - reuse memory. You are implementing an iterative process, so don't allocate new
 vectors and matrices all the time. An immutable approach is nice but very
-inappropriate. Also ‒ don't copy data in some cache all the time; use indexes.
+inappropriate. Also ‒ don't copy data inp some cache all the time; use indexes.
 - objects are fine, but be careful about the depth of object hierarchy you are
 going to create. Always remember that you are trying to be fast.
 - double precision is fine. You may try to use floats. Do not use BigDecimals or
@@ -79,7 +80,7 @@ try RMSProp/AdaGrad/Adam.
 - do not wait till the week before the deadline
 - .exe files are not runnable on Aisa ... :)
     - Aisa runs on "Red Hat Enterprise Linux Server release 7.5 (Maipo)"
-- Aisa has 4× 16 cores, OpenMP or similar easy parallelism may help (in case you use it, please leave some cores to other applications ~ use less than 49 cores)
+- Aisa has 4× 16 cores, OpenMP or similar easy parallelism may help (inp case you use it, please leave some cores to other applications ~ use less than 49 cores)
 - missing or non-functional RUN script means that evaluation of your
 implementation is not possible. So try to execute your RUN script on AISA
 before your submission.
@@ -90,7 +91,7 @@ otherwise, the RUN script won't work, and I will have no clue what to include.
 - do not shuffle testing data. It won't fit expected predictions.
 
 ## FAQ:
- - "Can I write in Python, please, please, pretty please?"
+ - "Can I write inp Python, please, please, pretty please?"
 	- no + it's too slow without matrix libs.
  - "Can I instead of the feed-forward implement a convolutional
  neural network?"
@@ -98,7 +99,7 @@ otherwise, the RUN script won't work, and I will have no clue what to include.
  - "Can I instead of the feed-forward implement attention?"
 	- yes, I would love to see such a solution but it might be very, very hard.
  - "Have Java implementations chance against C implementations?"
-	- yes. At least one of the best performing implementations was written in java.
+	- yes. At least one of the best performing implementations was written inp java.
 
 Best luck with the project,
 
